@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react';
 import { FormattedMessage, setLocale, getLocale } from 'umi/locale';
-import { Spin, Tag, Menu, Icon, Dropdown, Avatar, Tooltip, Button, Row, Col } from 'antd';
+import { Spin, Tag, Menu, Icon, Dropdown, Avatar, Tooltip, Button, Modal } from 'antd';
 import moment from 'moment';
+import { connect } from 'dva';
 import groupBy from 'lodash/groupBy';
 import NoticeIcon from '../NoticeIcon';
 import HeaderSearch from '../HeaderSearch';
@@ -10,7 +11,31 @@ import { AiOutlineWallet } from "react-icons/ai";
 import MetaMaskOnboarding from '@metamask/onboarding';
 const { isMetaMaskInstalled } = MetaMaskOnboarding;
 
-export default class GlobalHeaderRight extends PureComponent {
+const currentUrl = new URL(window.location.href);
+const forwarderOrigin =
+  currentUrl.hostname === 'localhost' ? 'http://localhost:9010' : undefined;
+let onboarding;
+try {
+  onboarding = new MetaMaskOnboarding({ forwarderOrigin });
+} catch (error) {
+  console.error(error);
+}
+
+export default 
+@connect(({ eth }) => ({
+  accounts: eth.accounts,
+}))
+class GlobalHeaderRight extends PureComponent {
+  state = {
+    loading: false,
+    visible: false,
+  };
+
+  isMetaMaskConnected = () => {
+    const { accounts } = this.props;
+    return accounts && accounts.length > 0;
+  }
+
   getNoticeData() {
     const { notices = [] } = this.props;
     if (notices.length === 0) {
@@ -42,19 +67,50 @@ export default class GlobalHeaderRight extends PureComponent {
     return groupBy(newNotices, 'type');
   }
 
-  onClickConnect = async () => {
+  handleWalletClick = async () => {
     try {
-      const newAccounts = await ethereum.request({
-        method: 'eth_requestAccounts',
-      });
-      const account = newAccounts[0];
-      console.log(account)
+      if (isMetaMaskInstalled())  {
+        if (this.isMetaMaskConnected()) {
+          if (onboarding) {
+            onboarding.stopOnboarding();
+          }
+        } else {
+          const { dispatch } = this.props;
+          dispatch({
+            type: 'eth/fetchAccounts',
+          });
+          const {accounts} = this.props;
+          console.log(accounts)
+        }   
+      } else {
+        this.showModal();        
+      }
     } catch (error) {
       console.error(error);
     }
+    
   };
 
+  showModal = () => {
+    this.setState({
+      visible: true,
+    });
+  };
 
+  handleOk = () => {
+    this.setState({ loading: true });
+    setTimeout(() => {
+      this.setState({ loading: false, visible: false });
+    }, 3000);
+  };
+
+  handleCancel = () => {
+    this.setState({ visible: false });
+  };
+
+  handleInstall = () => {
+    onboarding.startOnboarding();
+  };
   
   changLang = () => {
     const locale = getLocale();
@@ -73,7 +129,9 @@ export default class GlobalHeaderRight extends PureComponent {
       onMenuClick,
       onNoticeClear,
       theme,
+      accounts,
     } = this.props;
+    const { visible, loading } = this.state;
     const menu = (
       <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
         <Menu.Item key="userCenter">
@@ -100,6 +158,7 @@ export default class GlobalHeaderRight extends PureComponent {
     if (theme === 'dark') {
       className = `${styles.right}  ${styles.dark}`;
     }
+    
     return (
         <div className={className}>
             <HeaderSearch
@@ -168,24 +227,29 @@ export default class GlobalHeaderRight extends PureComponent {
             ) : (
               <Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
             )}
-            <AiOutlineWallet
-                onClick={() => {
-                this.onClickConnect();
-              }} 
-              size={25} 
-            />
-            <Button
-              size="small"
-              ghost={theme === 'dark'}
-              style={{
-                margin: '0 8px',
-              }}
-              onClick={() => {
-                this.changLang();
-              }}
+      
+              <AiOutlineWallet
+                  className = {styles.wltBtn}
+                  onClick={() => {
+                  this.handleWalletClick();
+                }} 
+                size={25} 
+              />
+            <Modal
+              visible={visible}
+              title="选择一个钱包来连接"
+              onOk={this.handleOk}
+              onCancel={this.handleCancel}
+              footer={[
+                <Button key="back" onClick={this.handleCancel}>
+                  取消
+                </Button>,
+                <Button key="submit" type="primary" loading={loading} onClick={this.handleOk}>
+                  连接
+                </Button>,
+              ]}
             >
-              <FormattedMessage id="navbar.lang" />
-            </Button>      
+            </Modal>     
         </div>
     );
   }

@@ -316,7 +316,7 @@ class Landing extends Component {
                 </div>
                 <div
                   className={styles.introSubTxt}>
-                  OpenSea is the world's first and largest NFT marketplace
+                  Fanland is the world's first and largest NFT marketplace
                 </div>
                 <Button type="primary" size="large"
                   style={{ width:'120px', marginLeft:'20px', marginRight:'30px', marginTop:'30px'}}>
