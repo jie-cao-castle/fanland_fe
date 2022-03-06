@@ -331,12 +331,12 @@ class Landing extends Component {
               </Col>
             <Col span={10}>
               <Card
-                style={{ float:'right', height:586, width: 500}}
+                style={{ float:'right', height:486, width: 500}}
                 cover={
                   <img
                     className={styles.introImg}
                     alt="example"
-                    src="https://www.ruanjia.com//img/1313553176.jpg"
+                    src="https://dongcokho1212.files.wordpress.com/2015/07/113.jpg"
                   />
                 }
               >
@@ -373,7 +373,7 @@ class Landing extends Component {
         />
         </div>
         <div>
-        <Carousel afterChange={onChange}>
+        <Carousel>
           <div>
             <h3 style={contentStyle}>1</h3>
           </div>

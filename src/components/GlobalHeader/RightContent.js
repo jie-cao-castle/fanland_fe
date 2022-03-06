@@ -6,6 +6,9 @@ import groupBy from 'lodash/groupBy';
 import NoticeIcon from '../NoticeIcon';
 import HeaderSearch from '../HeaderSearch';
 import styles from './index.less';
+import { AiOutlineWallet } from "react-icons/ai";
+import MetaMaskOnboarding from '@metamask/onboarding';
+const { isMetaMaskInstalled } = MetaMaskOnboarding;
 
 export default class GlobalHeaderRight extends PureComponent {
   getNoticeData() {
@@ -39,6 +42,20 @@ export default class GlobalHeaderRight extends PureComponent {
     return groupBy(newNotices, 'type');
   }
 
+  onClickConnect = async () => {
+    try {
+      const newAccounts = await ethereum.request({
+        method: 'eth_requestAccounts',
+      });
+      const account = newAccounts[0];
+      console.log(account)
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+
+  
   changLang = () => {
     const locale = getLocale();
     if (!locale || locale === 'zh-CN') {
@@ -151,6 +168,12 @@ export default class GlobalHeaderRight extends PureComponent {
             ) : (
               <Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
             )}
+            <AiOutlineWallet
+                onClick={() => {
+                this.onClickConnect();
+              }} 
+              size={25} 
+            />
             <Button
               size="small"
               ghost={theme === 'dark'}
