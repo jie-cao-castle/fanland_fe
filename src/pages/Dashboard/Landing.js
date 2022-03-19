@@ -42,9 +42,10 @@ for (let i = 0; i < 7; i += 1) {
   });
 }
 
-@connect(({ chart, loading }) => ({
+@connect(({ chart, loading, eth }) => ({
   chart,
   loading: loading.effects['chart/fetch'],
+  accounts: eth.accounts,
 }))
 class Landing extends Component {
   constructor(props) {
@@ -144,7 +145,7 @@ class Landing extends Component {
 
   render() {
     const { rangePickerValue, salesType, loading: propsLoding, currentTabKey } = this.state;
-    const { chart, loading: stateLoading } = this.props;
+    const { chart, loading: stateLoading, accounts } = this.props;
     const {
       visitData,
       visitData2,
@@ -327,6 +328,7 @@ class Landing extends Component {
                   size="large">
                     创造
                 </Button>
+                {accounts && accounts.length > 0 && <Button>{accounts[0]}</Button>}
               </div>
               </Col>
             <Col span={10}>
