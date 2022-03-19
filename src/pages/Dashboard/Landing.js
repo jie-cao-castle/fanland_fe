@@ -318,16 +318,19 @@ class Landing extends Component {
                 <div
                   className={styles.introSubTxt}>
                   Fanland is the world's first and largest NFT marketplace
-                </div>
+                </div>          
+
                 <Button type="primary" size="large"
                   style={{ width:'120px', marginLeft:'20px', marginRight:'30px', marginTop:'30px'}}>
                     探索
                 </Button>
-                <Button
-                  style={{ width:'120px', marginTop:'30px'}}
-                  size="large">
-                    创造
-                </Button>
+                <a href="/product/create">
+                  <Button
+                    style={{ width:'120px', marginTop:'30px'}}
+                    size="large">
+                      创造
+                  </Button>
+                </a>
                 {accounts && accounts.length > 0 && <Button>{accounts[0]}</Button>}
               </div>
               </Col>

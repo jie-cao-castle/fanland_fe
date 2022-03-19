@@ -45,6 +45,18 @@ export default [
           },
         ],
       },
+      {
+        path: '/product',
+        name: 'product',
+        icon: 'product',
+        routes: [
+          {
+            path: '/product/create',
+            name: 'productCreate',
+            component: './Product/ProductCreate',
+          },
+        ],
+      },
       // forms
       {
         path: '/form',
