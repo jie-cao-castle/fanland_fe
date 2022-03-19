@@ -22,9 +22,10 @@ export default {
 
   reducers: {
     saveAccounts(state, action) {
+    console.log(action.payload)
       return {
         ...state,
-        accounts: action.payload || [],
+        accounts: action.payload,
       };
     },
   },

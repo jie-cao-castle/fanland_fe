@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { FormattedMessage, setLocale, getLocale } from 'umi/locale';
-import { Spin, Tag, Menu, Icon, Dropdown, Avatar, Tooltip, Button, Modal } from 'antd';
+import { Spin, Tag, Menu, Icon, Dropdown, Avatar, Card, Button, Modal } from 'antd';
 import moment from 'moment';
 import { connect } from 'dva';
 import groupBy from 'lodash/groupBy';
@@ -79,8 +79,8 @@ class GlobalHeaderRight extends PureComponent {
           dispatch({
             type: 'eth/fetchAccounts',
           });
-          const {accounts} = this.props;
-          console.log(accounts)
+          const { currentEth } = this.props;
+          console.log(currentEth)
         }   
       } else {
         this.showModal();        
@@ -129,7 +129,7 @@ class GlobalHeaderRight extends PureComponent {
       onMenuClick,
       onNoticeClear,
       theme,
-      accounts,
+      accounts
     } = this.props;
     const { visible, loading } = this.state;
     const menu = (
@@ -180,6 +180,7 @@ class GlobalHeaderRight extends PureComponent {
               >
               <Menu.Item key="1">探索</Menu.Item>
               <Menu.Item key="2">创建</Menu.Item>
+              {accounts && <Menu.Item >{accounts[0]}</Menu.Item>}
             </Menu>
 
               <NoticeIcon
