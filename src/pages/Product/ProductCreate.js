@@ -172,7 +172,6 @@ class ProductCreate extends Component {
     const { getFieldDecorator } = this.props.form;
     const props = {
         name: 'file',
-        multiple: true,
         showUploadList: false,
         action: '//jsonplaceholder.typicode.com/posts/',
         onChange(info) {
@@ -228,10 +227,9 @@ class ProductCreate extends Component {
                 hasFeedback
                 >
                 {getFieldDecorator('name', {
-                    rules: [{
-                      message: 'The input is not valid E-mail!',
-                    }, {
-                    required: true, message: '请输入名称',
+                    rules: [
+                    {
+                        required: true, message: '请输入名称',
                     }],
                 })(
                     <Input />
@@ -244,8 +242,6 @@ class ProductCreate extends Component {
                 >
                 {getFieldDecorator('extraLink', {
                     rules: [{
-                      message: 'The input is not valid E-mail!',
-                    }, {
                     required: true, message: '请输入名称',
                     }],
                 })(
@@ -259,8 +255,6 @@ class ProductCreate extends Component {
                 >
                 {getFieldDecorator('desc', {
                     rules: [{
-                      message: 'The input is not valid E-mail!',
-                    }, {
                     required: true, message: '请输入名称',
                     }],
                 })(
@@ -274,9 +268,7 @@ class ProductCreate extends Component {
                 >
                 {getFieldDecorator('collection', {
                     rules: [{
-                      message: 'The input is not valid E-mail!',
-                    }, {
-                    required: true, message: '请输入名称',
+                        required: true, message: '请输入名称',
                     }],
                 })(
                     <Input />
@@ -289,8 +281,6 @@ class ProductCreate extends Component {
                 >
                 {getFieldDecorator('number', {
                     rules: [{
-                      message: 'The input is not valid E-mail!',
-                    }, {
                     required: true, message: '请输入名称',
                     }],
                 })(
@@ -308,8 +298,8 @@ class ProductCreate extends Component {
                         placeholder="Select a option and change input text above"
                         onChange={this.handleSelectChange}
                         >
-                        <Option value="male">male</Option>
-                        <Option value="female">female</Option>
+                        <Option value="ETH">ETH</Option>
+                        <Option value="FLD">FLD</Option>
                         </Select>
                     )}
                     </FormItem>
