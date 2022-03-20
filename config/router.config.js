@@ -55,6 +55,11 @@ export default [
             name: 'productCreate',
             component: './Product/ProductCreate',
           },
+          {
+            path: '/product/details',
+            name: 'productDetails',
+            component: './Product/productDetails',
+          },
         ],
       },
       // forms
@@ -235,7 +240,13 @@ export default [
                 path: '/account/center/projects',
                 component: './Account/Center/Projects',
               },
+
             ],
+          },
+          {
+            path: '/account/details',
+            name: 'myProductDetails',
+            component: './Account/MyProductDetails',
           },
           {
             path: '/account/settings',
