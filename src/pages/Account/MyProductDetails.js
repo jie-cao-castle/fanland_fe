@@ -34,8 +34,8 @@ import { getTimeDistance } from '@/utils/utils';
 
 import styles from './MyProductDetails.less';
 const Panel = Collapse.Panel;
-@connect(({ chart, loading, eth }) => ({
-  chart,
+@connect(({ chartData, loading, eth }) => ({
+  chartData,
   loading: loading.effects['chart/fetch'],
   accounts: eth.accounts,
 }))
@@ -246,7 +246,7 @@ class MyProductDetails extends Component {
       overflow: 'hidden',
     };
     const { rangePickerValue, salesType, loading: propsLoding, currentTabKey } = this.state;
-    const { chart, loading: stateLoading } = this.props;
+    const { chartData, loading: stateLoading } = this.props;
     const {
       visitData,
       visitData2,
@@ -257,7 +257,7 @@ class MyProductDetails extends Component {
       salesTypeData,
       salesTypeDataOnline,
       salesTypeDataOffline,
-    } = chart;
+    } = chartData;
     const loading = propsLoding || stateLoading;
     return (
         <div>

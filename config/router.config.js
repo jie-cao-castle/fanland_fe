@@ -244,9 +244,14 @@ export default [
             ],
           },
           {
-            path: '/account/details',
+            path: '/account/product/details',
             name: 'myProductDetails',
             component: './Account/MyProductDetails',
+          },
+          {
+            path: '/account/product/sell',
+            name: 'SellProduct',
+            component: './Account/SellProduct',
           },
           {
             path: '/account/settings',

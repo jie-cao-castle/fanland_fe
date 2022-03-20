@@ -1,7 +1,7 @@
 import { fakeChartData } from '@/services/api';
 
 export default {
-  namespace: 'chart',
+  namespace: 'chartData',
 
   state: {
     visitData: [],
