@@ -339,7 +339,7 @@ class SellProduct extends Component {
                     <Button type="primary">Submit</Button>
                 </Form.Item>
                 </Form>
-              </Col>
+            </Col>
             <Col span={10}>
               <Card
                 style={{ float:'right', height:486, width: 500}}
