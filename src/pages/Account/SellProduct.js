@@ -18,6 +18,8 @@ import {
   Input,
   InputNumber,
 } from 'antd';
+
+
 import moment from 'moment';
 const { RangePicker } = DatePicker;
 const { Meta } = Card;
@@ -48,7 +50,7 @@ for (let i = 0; i < 7; i += 1) {
 @connect(({ chartData, loading, eth }) => ({
   chartData,
   loading: loading.effects['chart/fetch'],
-  accounts: eth.accounts,
+  contract: eth.contract,
 }))
 @Form.create()
 class SellProduct extends Component {
@@ -147,9 +149,40 @@ class SellProduct extends Component {
     return '';
   }
 
+  handleCreate = key => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'eth/deployContract',
+      payload: {
+        name: 'TST',
+        symbol: 'TST',
+        initialNumber: 100,
+      },
+      callback: (response) => {
+        console.log(response)
+      }
+    });
+  };
+
+  handleQuery = key => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'eth/connectContract',
+      payload: {
+        name: 'TST',
+        symbol: 'TST',
+        initialNumber: 100,
+      },
+      callback: (response) => {
+        console.log(response)
+      }
+    });
+  };
+
   render() {
+
     const { rangePickerValue, salesType, loading: propsLoding, currentTabKey } = this.state;
-    const { chartData, loading: stateLoading, accounts } = this.props;
+    const { chartData, loading: stateLoading, accounts, contract } = this.props;
     const {
       visitData,
       visitData2,
@@ -336,7 +369,9 @@ class SellProduct extends Component {
                     />
                 </Form.Item>
                 <Form.Item >
-                    <Button type="primary">Submit</Button>
+                    <Button type="primary" onClick={this.handleCreate}>Submit</Button>
+                    <Button type="primary" onClick={this.handleQuery}>Query</Button>
+                    {contract && <Card>{contract.address}</Card>}
                 </Form.Item>
                 </Form>
             </Col>
