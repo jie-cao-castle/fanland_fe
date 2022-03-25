@@ -1,4 +1,4 @@
-import { queryTopProduct } from '@/services/product';
+import { queryTopProduct, createProduct } from '@/services/product';
 
 export default {
   namespace: 'product',
@@ -15,6 +15,13 @@ export default {
         payload: response,
       });
     },
+    *create({ payload }, { call, put }) {
+        const response = yield call(createProduct, payload);
+        yield put({
+          type: 'save',
+          payload: response,
+        });
+      },
     *fetchTopProduct(_, { call, put }) {
       const response = yield call(queryTopProduct);
       yield put({

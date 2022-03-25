@@ -30,8 +30,8 @@ for (let i = 0; i < 7; i += 1) {
   });
 }
 
-@connect(({ chart, loading, eth }) => ({
-  chart,
+@connect(({ user, loading, eth }) => ({
+  currentUser: user.currentUser,
   loading: loading.effects['chart/fetch'],
   accounts: eth.accounts,
 }))
@@ -40,6 +40,7 @@ class ProductCreate extends Component {
     state = {
         imageUrl:{},
         loading: false,
+        fileList:[],
    };
   constructor(props) {
     super(props);
@@ -99,14 +100,19 @@ class ProductCreate extends Component {
     });
   };
 
-  handleSubmit = (e) => {
+  handleSubmit = e => {
+    const { dispatch, form } = this.props;
     e.preventDefault();
-    this.props.form.validateFieldsAndScroll((err, values) => {
+    form.validateFieldsAndScroll((err, values) => {
+      console.log(values);
       if (!err) {
-        console.log('Received values of form: ', values);
+        dispatch({
+          type: 'product/create',
+          payload: values,
+        });
       }
     });
-  }
+  };
 
   selectDate = type => {
     const { dispatch } = this.props;
@@ -152,39 +158,46 @@ class ProductCreate extends Component {
     return isJpgOrPng && isLt2M;
   }
 
-  handleChange = info => {
-    if (info.file.status === 'uploading') {
-      this.setState({ loading: true });
-      return;
+  handleChange = (info) => {
+    let fileList = info.fileList;
+
+    // 1. Limit the number of uploaded files
+    //    Only to show two recent uploaded files, and old ones will be replaced by the new
+    fileList = fileList.slice(-1);
+
+    // 2. filter successfully uploaded files according to response from server
+    fileList = fileList.filter((file) => {
+      if (file.response) {
+        return file.response.success === true;
+      }
+      return true;
+    });
+
+
+    console.log(fileList);
+    if (fileList && fileList.length > 0) {
+      const { form } = this.props;
+      console.log(fileList[0]);
+      if (fileList[0].response) {
+        form.setFieldsValue({
+          imgUrl: fileList[0].response.result,
+        });
+      }
     }
-    if (info.file.status === 'done') {
-      // Get this url from response in real world.
-      getBase64(info.file.originFileObj, imageUrl =>
-        this.setState({
-          imageUrl,
-          loading: false,
-        }),
-      );
-    }
-  };
+
+
+    this.setState({ fileList });
+  }
 
   render() {
     const { getFieldDecorator } = this.props.form;
+    const { currentUser } = this.props;
     const props = {
         name: 'file',
-        showUploadList: false,
-        action: '//jsonplaceholder.typicode.com/posts/',
-        onChange(info) {
-          const status = info.file.status;
-          if (status !== 'uploading') {
-            console.log(info.file, info.fileList);
-          }
-          if (status === 'done') {
-            message.success(`${info.file.name} file uploaded successfully.`);
-          } else if (status === 'error') {
-            message.error(`${info.file.name} file upload failed.`);
-          }
-        },
+        listType: 'picture',
+        className: 'upload-list-inline',
+        action: '/api/v1/productsUpload/postContent',
+        onChange: this.handleChange,
       };
       const formItemLayout = {
         labelCol: {
@@ -209,10 +222,11 @@ class ProductCreate extends Component {
         },
       };
       
+      
     return (
         <Card title="上传你的作品" bordered={false}>
-            <div style={{ marginTop: 16, height: 180 }}>
-                <Dragger {...props}>
+            <div style={{ marginTop: 16}}>
+                <Dragger {...props} fileList={this.state.fileList}>
                 <p className="ant-upload-drag-icon">
                     <Icon type="inbox" />
                 </p>
@@ -240,20 +254,26 @@ class ProductCreate extends Component {
                 label="外部链接"
                 hasFeedback
                 >
-                {getFieldDecorator('extraLink', {
+                {getFieldDecorator('externalUrl', {
                     rules: [{
-                    required: true, message: '请输入名称',
+                    message: '请外部链接',
                     }],
                 })(
                     <Input />
                 )}
                 </FormItem>
+                {getFieldDecorator('creatorId', {
+                    initialValue: currentUser.Id,
+                })}
+                {getFieldDecorator('imgUrl', {
+                    initialValue: undefined,
+                })}
                 <FormItem
                 {...formItemLayout}
                 label="描述"
                 hasFeedback
                 >
-                {getFieldDecorator('desc', {
+                {getFieldDecorator('productDesc', {
                     rules: [{
                     required: true, message: '请输入名称',
                     }],
@@ -261,48 +281,6 @@ class ProductCreate extends Component {
                     <TextArea rows={4} />
                 )}
                 </FormItem>
-                <FormItem
-                {...formItemLayout}
-                label="作品集"
-                hasFeedback
-                >
-                {getFieldDecorator('collection', {
-                    rules: [{
-                        required: true, message: '请输入名称',
-                    }],
-                })(
-                    <Input />
-                )}
-                </FormItem>
-                <FormItem
-                {...formItemLayout}
-                label="数量"
-                hasFeedback
-                >
-                {getFieldDecorator('number', {
-                    rules: [{
-                    required: true, message: '请输入名称',
-                    }],
-                })(
-                    <InputNumber min={1} max={10} defaultValue={3} />
-                )}
-                </FormItem>
-                <FormItem
-                   {...formItemLayout}
-                    label="区块链"                    
-                    >
-                    {getFieldDecorator('blockChain', {
-                        rules: [{ required: true, message: 'Please select your gender!' }],
-                    })(
-                        <Select
-                        placeholder="Select a option and change input text above"
-                        onChange={this.handleSelectChange}
-                        >
-                        <Option value="ETH">ETH</Option>
-                        <Option value="FLD">FLD</Option>
-                        </Select>
-                    )}
-                    </FormItem>
                 <FormItem {...tailFormItemLayout}>
                     <Button type="primary" htmlType="submit">创建</Button>
                 </FormItem>
