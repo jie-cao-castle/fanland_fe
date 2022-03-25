@@ -17,22 +17,10 @@ import {
   Carousel 
 } from 'antd';
 const { Meta } = Card;
-import {
-
-  Pie,
-} from '@/components/Charts';
-import Trend from '@/components/Trend';
-import NumberInfo from '@/components/NumberInfo';
 import NumberedAvatar from '@/components/NumberAvatar';
-import numeral from 'numeral';
-import GridContent from '@/components/PageHeaderWrapper/GridContent';
-import Yuan from '@/utils/Yuan';
 import { getTimeDistance } from '@/utils/utils';
 
 import styles from './Landing.less';
-
-const { TabPane } = Tabs;
-const { RangePicker } = DatePicker;
 
 const rankingListData = [];
 for (let i = 0; i < 7; i += 1) {
@@ -42,8 +30,8 @@ for (let i = 0; i < 7; i += 1) {
   });
 }
 
-@connect(({ chart, loading, eth }) => ({
-  chart,
+@connect(({ product, loading, eth }) => ({
+  topProduct: product.topProduct,
   loading: loading.effects['chart/fetch'],
   accounts: eth.accounts,
 }))
@@ -73,6 +61,9 @@ class Landing extends Component {
 
   componentDidMount() {
     const { dispatch } = this.props;
+    dispatch({
+      type: 'product/fetchTopProduct',
+    });
   }
 
   componentWillUnmount() {
@@ -112,120 +103,9 @@ class Landing extends Component {
 
   render() {
     const { rangePickerValue, salesType, loading: propsLoding, currentTabKey } = this.state;
-    const { chart, loading: stateLoading, accounts } = this.props;
-    const {
-      visitData,
-      visitData2,
-      salesData,
-      searchData,
-      offlineData,
-      offlineChartData,
-      salesTypeData,
-      salesTypeDataOnline,
-      salesTypeDataOffline,
-    } = chart;
-    const loading = propsLoding || stateLoading;
-    let salesPieData;
-    if (salesType === 'all') {
-      salesPieData = salesTypeData;
-    } else {
-      salesPieData = salesType === 'online' ? salesTypeDataOnline : salesTypeDataOffline;
-    }
-    const menu = (
-      <Menu>
-        <Menu.Item>操作一</Menu.Item>
-        <Menu.Item>操作二</Menu.Item>
-      </Menu>
-    );
+    const { topProduct, loading: stateLoading, accounts } = this.props;
+    console.log(topProduct)
 
-    const iconGroup = (
-      <span className={styles.iconGroup}>
-        <Dropdown overlay={menu} placement="bottomRight">
-          <Icon type="ellipsis" />
-        </Dropdown>
-      </span>
-    );
-
-    const columns = [
-      {
-        title: <FormattedMessage id="app.analysis.table.rank" defaultMessage="Rank" />,
-        dataIndex: 'index',
-        key: 'index',
-      },
-      {
-        title: (
-          <FormattedMessage
-            id="app.analysis.table.search-keyword"
-            defaultMessage="Search keyword"
-          />
-        ),
-        dataIndex: 'keyword',
-        key: 'keyword',
-        render: text => <a href="/">{text}</a>,
-      },
-      {
-        title: <FormattedMessage id="app.analysis.table.users" defaultMessage="Users" />,
-        dataIndex: 'count',
-        key: 'count',
-        sorter: (a, b) => a.count - b.count,
-        className: styles.alignRight,
-      },
-      {
-        title: (
-          <FormattedMessage id="app.analysis.table.weekly-range" defaultMessage="Weekly Range" />
-        ),
-        dataIndex: 'range',
-        key: 'range',
-        sorter: (a, b) => a.range - b.range,
-        render: (text, record) => (
-          <Trend flag={record.status === 1 ? 'down' : 'up'}>
-            <span style={{ marginRight: 4 }}>{text}%</span>
-          </Trend>
-        ),
-        align: 'right',
-      },
-    ];
-
-    const activeKey = currentTabKey || (offlineData[0] && offlineData[0].name);
-
-    const CustomTab = ({ data, currentTabKey: currentKey }) => (
-      <Row gutter={8} style={{ width: 138, margin: '8px 0' }}>
-        <Col span={12}>
-          <NumberInfo
-            title={data.name}
-            subTitle={
-              <FormattedMessage
-                id="app.analysis.conversion-rate"
-                defaultMessage="Conversion Rate"
-              />
-            }
-            gap={2}
-            total={`${data.cvr * 100}%`}
-            theme={currentKey !== data.name && 'light'}
-          />
-        </Col>
-        <Col span={12} style={{ paddingTop: 36 }}>
-          <Pie
-            animate={false}
-            color={currentKey !== data.name && '#BDE4FF'}
-            inner={0.55}
-            tooltip={false}
-            margin={[0, 0, 0, 0]}
-            percent={data.cvr * 100}
-            height={64}
-          />
-        </Col>
-      </Row>
-    );
-
-    const topColResponsiveProps = {
-      xs: 24,
-      sm: 12,
-      md: 12,
-      lg: 12,
-      xl: 6,
-      style: { marginBottom: 24 },
-    };
     const listData = [];
     for (let i = 0; i < 5; i++) {
       listData.push({
@@ -278,22 +158,22 @@ class Landing extends Component {
               </div>
               </Col>
             <Col span={10}>
-              <Card
+              {topProduct.Name && <Card
                 style={{ float:'right', height:486, width: 500}}
                 cover={
                   <img
                     className={styles.introImg}
                     alt="example"
-                    src="https://dongcokho1212.files.wordpress.com/2015/07/113.jpg"
+                    src={topProduct.ImgUrl}
                   />
                 }
               >
                 <Meta
-                  avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
-                  title="Andy Simsons"
-                  description={<Link>This is the description</Link>}
+                  avatar={<Avatar src={topProduct.Creator.AvatarUrl} />}
+                  title={topProduct.Creator.UserName}
+                  description={<Link>{topProduct.Desc}</Link>}
                 />
-              </Card>
+              </Card>}
             </Col>
           </Row>
         </div>
