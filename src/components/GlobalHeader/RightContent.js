@@ -7,7 +7,8 @@ import groupBy from 'lodash/groupBy';
 import NoticeIcon from '../NoticeIcon';
 import HeaderSearch from '../HeaderSearch';
 import styles from './index.less';
-import { AiOutlineWallet } from "react-icons/ai";
+import { AiOutlineWallet, AiOutlineUser } from "react-icons/ai";
+
 import MetaMaskOnboarding from '@metamask/onboarding';
 const { isMetaMaskInstalled } = MetaMaskOnboarding;
 
@@ -131,6 +132,20 @@ class GlobalHeaderRight extends PureComponent {
       theme,
       accounts
     } = this.props;
+    const itemMenu = (
+      <Menu>
+        <Menu.Item>
+          <a rel="noopener noreferrer" href="/user/login">
+            登录
+          </a>
+        </Menu.Item>
+        <Menu.Item>
+          <a rel="noopener noreferrer" href="/reigster">
+            注册
+          </a>
+        </Menu.Item>
+      </Menu>
+    );
     const { visible, loading } = this.state;
     const menu = (
       <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
@@ -213,20 +228,25 @@ class GlobalHeaderRight extends PureComponent {
                 emptyImage="https://gw.alipayobjects.com/zos/rmsportal/HsIsxMZiWKrNUavQUXqx.svg"
               />
             </NoticeIcon>
-            {currentUser.name ? (
+            {currentUser && currentUser.UserName ? (
               <Dropdown overlay={menu}>
                 <span className={`${styles.action} ${styles.account}`}>
                   <Avatar
                     size="small"
                     className={styles.avatar}
-                    src={currentUser.avatar}
+                    src={currentUser.AvatarUrl}
                     alt="avatar"
                   />
-                  <span className={styles.name}>{currentUser.name}</span>
+                  <span className={styles.name}>{currentUser.UserName}</span>
                 </span>
               </Dropdown>
             ) : (
-              <Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
+              <Dropdown overlay={itemMenu}>
+              <AiOutlineUser
+                  className = {styles.wltBtn}
+                   size={25} 
+              />
+              </Dropdown>
             )}
       
               <AiOutlineWallet

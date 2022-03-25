@@ -4,7 +4,7 @@ import { Icon } from 'antd';
 import GlobalFooter from '@/components/GlobalFooter';
 import styles from './UserLayout.less';
 import logo from '../assets/logo.svg';
-
+import { GiAbstract065 } from 'react-icons/gi';
 const links = [
   {
     key: 'help',
@@ -50,11 +50,11 @@ class UserLayout extends React.PureComponent {
           <div className={styles.top}>
             <div className={styles.header}>
               <Link to="/">
-                <img alt="logo" className={styles.logo} src={logo} />
-                <span className={styles.title}>Ant Design</span>
+                <GiAbstract065 size={32} style={{ marginRight:'10px'}}/>
+                <span className={styles.title}>Fanland</span>
               </Link>
             </div>
-            <div className={styles.desc}>Ant Design 是西湖区最具影响力的 Web 设计规范</div>
+            <div className={styles.desc}>Fanland是全亚洲最活跃的NFT艺术品社区</div>
           </div>
           {children}
         </div>
