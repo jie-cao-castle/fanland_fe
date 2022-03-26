@@ -35,7 +35,8 @@ for (let i = 0; i < 7; i += 1) {
   });
 }
 
-@connect(({ eth, product }) => ({
+@connect(({ eth, product, user }) => ({
+  currentUser: user.currentUser,
   productDetails: product.productDetails,
   accounts: eth.accounts,
   contract: eth.contract,
@@ -192,11 +193,35 @@ class ProductDetails extends Component {
     });
   }
 
-  handleSubmit = (e) => {
+  handleSale = (e) => {
+    const { dispatch, productDetails,chainId, productContracts, currentUser } = this.props;
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
+        dispatch({
+          type: 'product/createSale',
+          payload: {
+            productId: productDetails.product.Id,
+            chainId :  chainId,
+            chainCode:"ETH",
+            contractId: productContracts[0].Id,
+            price:values.price * 1000000,
+            priceUnit: 6,
+            startTime: values.saleTimeRange[0].format(),
+            endTime:values.saleTimeRange[0].format(),
+            effectiveTime:values.saleTimeRange[0].format(),
+            status: 0,
+            fromUserId: currentUser.Id
+          },
+          callback: (response) => {
+            if (response && response.success) {
+                message.success('成功创建NFT');
+                this.setState({ loading: false, visible: false });
+            }
+          }
+        });
+
       }
     });
   }
@@ -320,11 +345,11 @@ class ProductDetails extends Component {
         <Modal
           visible={visible}
           title="创建NFT合约"
-          onOk={this.handleCreateContract}
+          onOk={this.handleSale}
           onCancel={this.handleSellCancel}
           footer={[
             <Button key="back" size="large" onClick={this.handleSellCancel}>取消</Button>,
-            <Button disabled={!salesEnabled} key="submit" type="primary" size="large" loading={loading} onClick={this.handleCreateContract}>
+            <Button disabled={!salesEnabled} key="submit" type="primary" size="large" loading={loading} onClick={this.handleSale}>
               创建
             </Button>,
           ]}
@@ -373,7 +398,10 @@ class ProductDetails extends Component {
                   </Form.Item>
                   {getFieldDecorator('chainId', { initialValue: chainId })}
                   <Form.Item label="Duration">
-                      <RangePicker
+                      {getFieldDecorator('saleTimeRange', { initialValue: [
+                        moment('2015/01/01', 'YYYY/MM/DD'), moment('2015/01/01', 'YYYY/MM/DD')
+                      ] })
+                      (<RangePicker
                       disabled={!salesEnabled}
                       ranges={{
                           Today: [moment(), moment()],
@@ -381,7 +409,7 @@ class ProductDetails extends Component {
                       }}
                       showTime
                       format="YYYY/MM/DD HH:mm:ss"
-                      />
+                      />)}
                   </Form.Item>
                   {contract && <Card>{contract.address}</Card>}
                 </Form>

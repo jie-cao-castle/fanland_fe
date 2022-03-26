@@ -1,5 +1,6 @@
 import { queryTopProduct, 
-        createProduct, 
+        createProduct,
+        createSale, 
         getProduct,
         queryProductContracts, 
         createProductContract } from '@/services/product';
@@ -13,6 +14,7 @@ export default {
   state: {
     topProduct: {},
     productDetails:{},
+    sale:{},
     productContracts:[]
   },
 
@@ -34,6 +36,19 @@ export default {
               id:response.result.Id,
             }),
           }));
+        }
+      },
+
+      *createSale({ payload, callback }, { call, put }) {       
+        const response = yield call(createSale, payload);
+        if (callback && typeof callback === 'function') {
+          callback(response)
+        }
+        if (response && response.success) {
+          yield put({
+              type: 'saveSale',
+              payload: response,
+            });
         }
       },
       *createContract({ payload }, { call, put }) {
@@ -105,6 +120,12 @@ export default {
         return {
           ...state,
           productContracts: [action.payload.result]
+        };
+      },
+      saveSale(state, action) {
+        return {
+          ...state,
+          sale: action.payload.result
         };
       },
     clear() {

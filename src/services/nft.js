@@ -17,7 +17,7 @@ export async function deployContract(params) {
     const contract = await nftFactory.deploy(
         params.name,
         'TST',
-        100,
+        1,
     );
 
     console.log(contract.address);    

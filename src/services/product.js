@@ -25,7 +25,14 @@ export async function createProduct(params) {
         },
       });
   }
-
+  export async function createSale(params) {
+    return request('/api/v1/products/addSale', {
+        method: 'POST',
+        body: {
+          ...params,
+        },
+      });
+  }
   
 export async function queryProductContracts(params) {
   return request('/api/v1/asset/contracts', {
