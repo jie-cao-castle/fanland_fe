@@ -18,10 +18,17 @@ export async function deployContract(params) {
         params.name,
         'TST',
         100,
-      );
-      console.log(contract.address);
-      console.log(contract.deployTransaction.hash);
-      await contract.deployed();
+    );
+
+    console.log(contract.address);    
+    console.log(contract.deployTransaction.hash);
+    return contract;
+}
+
+export async function queryChainId() {
+    return ethereum.request({
+        method: 'eth_chainId',
+    });
 }
 
 export async function connectContract(params) {
@@ -30,7 +37,7 @@ export async function connectContract(params) {
     const ethersProvider = new ethers.providers.Web3Provider(window.ethereum, 'any');
 
     // The address from the above deployment example
-    let contractAddress = "0x4a5416BC676DaBdaE3625D77a688d01a51c7e867";
+    let contractAddress = params.contractAddress;
     //let contractAddress = "0x147B8eb97fD247D06C4006D269c90C1908Fb5D54";
     // We connect to the Contract using a Provider, so we will only
     // have read-only access to the Contract

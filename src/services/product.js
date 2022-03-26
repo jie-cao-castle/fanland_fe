@@ -25,3 +25,21 @@ export async function createProduct(params) {
         },
       });
   }
+
+  
+export async function queryProductContracts(params) {
+  return request('/api/v1/asset/contracts', {
+      method: 'POST',
+      body: {
+        ...params,
+      },
+    });
+}
+export async function createProductContract(params) {
+  return request('/api/v1/asset/addContract', {
+      method: 'POST',
+      body: {
+        ...params,
+      },
+    });
+}

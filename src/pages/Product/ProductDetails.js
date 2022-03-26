@@ -18,11 +18,12 @@ import {
 import moment from 'moment';
 const { Meta } = Card;
 import { Form, Upload, Icon, message } from 'antd';
-const Dragger = Upload.Dragger;
-const { TextArea } = Input;
 import { getTimeDistance, getPageQuery } from '@/utils/utils';
 import styles from './ProductCreate.less';
-import product from '@/models/product';
+import {
+  chainCurrencyMap,
+} from '../../assets/constants.json'
+
 
 const { RangePicker } = DatePicker;
 const FormItem = Form.Item;
@@ -38,8 +39,10 @@ for (let i = 0; i < 7; i += 1) {
   productDetails: product.productDetails,
   accounts: eth.accounts,
   contract: eth.contract,
+  chainId: eth.chainId,
+  productContracts: product.productContracts,
 }))
-
+@Form.create()
 class ProductDetails extends Component {
     state = {
         imageUrl:{},
@@ -99,6 +102,29 @@ class ProductDetails extends Component {
           id: parseInt(id, 10),
         },
       });
+      dispatch({
+        type: 'product/fetchProductContracts',
+        payload: {
+          productId: parseInt(id, 10),
+        },
+        callback: (response) => {
+          console.log("fetchProductContracts", response)
+          if (response.success) {
+            const contract = response.result[0];
+            if (contract.Status == 0) {
+              dispatch({
+                type: 'product/queryContract',
+                payload: {
+                  contractAddress: contract.ContractAddress,
+                },
+              });
+            }
+          }
+        }
+      });
+      dispatch({
+        type: 'eth/queryChainId',
+      });
   }
 
   componentWillUnmount() {
@@ -110,17 +136,61 @@ class ProductDetails extends Component {
     clearTimeout(this.timeoutId);
   }
 
-  handleChangeSalesType = e => {
-    this.setState({
-      salesType: e.target.value,
+  handleCreateContract = e => {
+    const { dispatch, form, chainId } = this.props;
+    const params = getPageQuery();
+    let { id } = params;
+    e.preventDefault();
+    form.validateFieldsAndScroll((err, values) => {
+      dispatch({
+        type: 'eth/deployContract',
+        payload: {
+          name: 'TST',
+          symbol: 'TST',
+          initialNumber: 10,
+        },
+        callback: (response) => {
+          console.log("deploycontract", response)
+          if (response.address) {
+            dispatch({
+              type: 'product/createContract',
+              payload: {
+                productId: parseInt(id, 10),
+                chainId : chainId,
+                chainCode:chainCurrencyMap[chainId.toString()],
+                contractAddress: response.address,
+                tokenSymbol: 'TST',
+                tokenName: 'TST',
+                status: 0
+              }
+            });
+          }
+        }
+      });
     });
   };
 
-  handleTabChange = key => {
-    this.setState({
-      currentTabKey: key,
+  handleBuy = (e) => {
+    e.preventDefault();
+    const { dispatch, productData } = this.props;
+    dispatch({
+      type: 'eth/buyNft',
+      payload: {
+        price: 0.05,
+      },
+      callback: (response) => {
+        if (response.transactionHash) {
+          dispatch({
+            type: 'product/createNftOrder',
+            payload: {
+              ...productData,
+              transactionHash
+            }
+          });
+        }
+      }
     });
-  };
+  }
 
   handleSubmit = (e) => {
     e.preventDefault();
@@ -183,11 +253,20 @@ class ProductDetails extends Component {
   };
 
   render() {
-    const { productDetails, contract } = this.props;
+    const { productDetails, contract, accounts, chainId, productContracts } = this.props;
+    console.log(chainId)
     let productData = {};
     if (productDetails) {
       productData = productDetails.product;
     }
+
+    const hasAccounts = accounts && accounts.length > 0;
+    const hasContracts = productContracts && productContracts.length > 0;
+    const salesEnabled = hasAccounts && hasContracts;
+
+    const {
+      form: { getFieldDecorator },
+    } = this.props;
     const { visible, loading } = this.state;
     return (
         <div>
@@ -197,8 +276,8 @@ class ProductDetails extends Component {
         </Row>
         <Row>
             <Col>
-                 {productData && <Card 
-                    style={{ float:'left', height:486, width: 500}}
+                 {productData && productData.Creator && <Card 
+                    style={{ float:'left'}}
                     cover={
                     <img
                         className={styles.introImg}
@@ -214,8 +293,15 @@ class ProductDetails extends Component {
                     />
                 </Card>
                 }
-            </Col>
-            <Col>
+
+                {hasContracts && <Card title='合约信息'
+                    style={{ float:'left'}}>  
+                      <div>合约地址 {productContracts[0].ContractAddress}</div>                    
+                      <div>合约状态 {productContracts[0].Status}</div>   
+                </Card>
+                }
+              </Col>
+              <Col>
                 <div>
                     作品集
                 </div>
@@ -225,6 +311,7 @@ class ProductDetails extends Component {
                 <div>
                     拥有者
                 </div>
+                <div style = {{display:'none'}}>{chainId}</div>
             </Col>
         </Row>
         <Row>
@@ -232,29 +319,62 @@ class ProductDetails extends Component {
         </Row>
         <Modal
           visible={visible}
-          title="Title"
-          onOk={this.handleSellOk}
+          title="创建NFT合约"
+          onOk={this.handleCreateContract}
           onCancel={this.handleSellCancel}
           footer={[
-            <Button key="back" size="large" onClick={this.handleSellCancel}>Return</Button>,
-            <Button key="submit" type="primary" size="large" loading={loading} onClick={this.handleSellOk}>
-              Submit
+            <Button key="back" size="large" onClick={this.handleSellCancel}>取消</Button>,
+            <Button disabled={!salesEnabled} key="submit" type="primary" size="large" loading={loading} onClick={this.handleCreateContract}>
+              创建
             </Button>,
           ]}
         >
+          {
+            !hasAccounts && <div>
+              您尚未连接到钱包，请点击右上角钱包按钮选择连接的钱包
+            </div>
+          }
+          {
+            hasAccounts && !hasContracts && 
+              <div>
+                 <span>您尚未为您的作品在区块链中创建NFT合约</span>
+                  <Button type="primary" onClick={this.handleCreateContract} size="large">创建合约</Button>
+              </div>
+          }
+          
+
                 <Form layout='vertical'
                 >
                   <Form.Item label="Price">
+                    
                   <Input.Group compact>
-                      <Select defaultValue="ETH">
-                          <Option value="ETH">ETH</Option>
-                          <Option value="FLD">FLD</Option>
-                      </Select>
-                      <InputNumber min={1} max={180} defaultValue={7} style={{ width: 300, textAlign: 'center' }} placeholder="Minimum" />               
-                      </Input.Group>
+                  {getFieldDecorator('chainCode', {
+                    initialValue: 'ETH',
+                    rules: [
+                      { required: true, message: '请选择合约' },
+                    ],
+                    })(<Select disabled={!salesEnabled} defaultValue="1">
+                        <Option value="1">ETH</Option>
+                      </Select>)}
+                      {getFieldDecorator('price', {
+                        initialValue: 0,
+                        rules: [
+                          { required: true, message: '请输入NFT价格' },
+                        ],
+                        })(<InputNumber 
+                                disabled={!salesEnabled}
+                                min={1} 
+                                max={1000} 
+                                step={0.00001} 
+                                defaultValue={0} 
+                                style={{ width: 300, textAlign: 'center' }} />)}
+                                        
+                    </Input.Group>
                   </Form.Item>
+                  {getFieldDecorator('chainId', { initialValue: chainId })}
                   <Form.Item label="Duration">
                       <RangePicker
+                      disabled={!salesEnabled}
                       ranges={{
                           Today: [moment(), moment()],
                           'This Month': [moment().startOf('month'), moment().endOf('month')],

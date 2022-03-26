@@ -1,4 +1,10 @@
-import { queryTopProduct, createProduct, getProduct } from '@/services/product';
+import { queryTopProduct, 
+        createProduct, 
+        getProduct,
+        queryProductContracts, 
+        createProductContract } from '@/services/product';
+
+import { connectContract } from '@/services/nft';
 import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
 export default {
@@ -7,6 +13,7 @@ export default {
   state: {
     topProduct: {},
     productDetails:{},
+    productContracts:[]
   },
 
   effects: {
@@ -29,10 +36,40 @@ export default {
           }));
         }
       },
+      *createContract({ payload }, { call, put }) {
+        console.log(payload)
+        const response = yield call(createProductContract, payload);
+        if (response && response.success) {
+        yield put({
+            type: 'saveContract',
+            payload: response,
+          });
+        }
+      },
+
+      *queryContract({ payload }, { call, put }) {
+        try {
+        const response = yield call(connectContract, payload);
+        console.log(response)
+        } catch(error) {
+          console.log(error);
+
+        }
+      },
     *fetchTopProduct(_, { call, put }) {
       const response = yield call(queryTopProduct);
       yield put({
         type: 'saveTopProduct',
+        payload: response,
+      });
+    },
+    *fetchProductContracts({ payload, callback }, { call, put }) {
+      const response = yield call(queryProductContracts, payload);
+      if (callback && typeof callback === 'function') {
+        callback(response)
+      }
+      yield put({
+        type: 'saveContracts',
         payload: response,
       });
     },
@@ -56,6 +93,18 @@ export default {
         return {
           ...state,
           topProduct: action.payload.result,
+        };
+      },
+      saveContracts(state, action) {
+        return {
+          ...state,
+          productContracts: action.payload.result,
+        };
+      },
+      saveContract(state, action) {
+        return {
+          ...state,
+          productContracts: [action.payload.result]
         };
       },
     clear() {
