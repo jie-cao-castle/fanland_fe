@@ -4,6 +4,15 @@ export async function query() {
   return request('/api/users');
 }
 
+export async function getProduct(params) {
+  return request('/api/v1/products/details', {
+      method: 'POST',
+      body: {
+        ...params,
+      },
+    });
+}
+
 export async function queryTopProduct() {
   return request('/api/v1/products/top');
 }

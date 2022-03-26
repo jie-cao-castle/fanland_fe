@@ -1,26 +1,33 @@
-import { queryTopProduct, createProduct } from '@/services/product';
-
+import { queryTopProduct, createProduct, getProduct } from '@/services/product';
+import { routerRedux } from 'dva/router';
+import { stringify } from 'qs';
 export default {
   namespace: 'product',
 
   state: {
     topProduct: {},
+    productDetails:{},
   },
 
   effects: {
-    *fetch(_, { call, put }) {
-      const response = yield call(fakeChartData);
+    *fetch({ payload }, { call, put }) {
+      const response = yield call(getProduct, payload);
       yield put({
-        type: 'save',
+        type: 'saveDetails',
         payload: response,
       });
     },
+
     *create({ payload }, { call, put }) {
         const response = yield call(createProduct, payload);
-        yield put({
-          type: 'save',
-          payload: response,
-        });
+        if (response && response.success) {
+        yield put(routerRedux.push({
+            pathname: '/product/details',
+            search: stringify({
+              id:response.result.Id,
+            }),
+          }));
+        }
       },
     *fetchTopProduct(_, { call, put }) {
       const response = yield call(queryTopProduct);
@@ -36,6 +43,12 @@ export default {
       return {
         ...state,
         ...payload,
+      };
+    },
+    saveDetails(state, action) {
+      return {
+        ...state,
+        productDetails: action.payload.result,
       };
     },
     saveTopProduct(state, action) {

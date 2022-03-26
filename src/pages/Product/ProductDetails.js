@@ -9,19 +9,21 @@ import {
   Input,
   Avatar,
   Button,
-  InputNumber,
+  Modal,
   Row,
   Col,
+  Select,
+  InputNumber,
 } from 'antd';
+import moment from 'moment';
 const { Meta } = Card;
 import { Form, Upload, Icon, message } from 'antd';
 const Dragger = Upload.Dragger;
 const { TextArea } = Input;
-import { getTimeDistance } from '@/utils/utils';
-
+import { getTimeDistance, getPageQuery } from '@/utils/utils';
 import styles from './ProductCreate.less';
+import product from '@/models/product';
 
-const { TabPane } = Tabs;
 const { RangePicker } = DatePicker;
 const FormItem = Form.Item;
 const rankingListData = [];
@@ -32,16 +34,17 @@ for (let i = 0; i < 7; i += 1) {
   });
 }
 
-@connect(({ chart, loading, eth }) => ({
-  chart,
-  loading: loading.effects['chart/fetch'],
+@connect(({ eth, product }) => ({
+  productDetails: product.productDetails,
   accounts: eth.accounts,
+  contract: eth.contract,
 }))
 
 class ProductDetails extends Component {
     state = {
         imageUrl:{},
         loading: false,
+        visible: false,
    };
   constructor(props) {
     super(props);
@@ -52,12 +55,6 @@ class ProductDetails extends Component {
         total: 323234,
       });
     }
-    this.state = {
-      salesType: 'all',
-      currentTabKey: '',
-      loading: true,
-      rangePickerValue: getTimeDistance('year'),
-    };
   }
 
   state = {
@@ -93,23 +90,21 @@ class ProductDetails extends Component {
     },
   ];
   componentDidMount() {
+    const params = getPageQuery();
+    let { id } = params;
     const { dispatch } = this.props;
-    this.reqRef = requestAnimationFrame(() => {
       dispatch({
-        type: 'chart/fetch',
+        type: 'product/fetch',
+        payload: {
+          id: parseInt(id, 10),
+        },
       });
-      this.timeoutId = setTimeout(() => {
-        this.setState({
-          loading: false,
-        });
-      }, 600);
-    });
   }
 
   componentWillUnmount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'chart/clear',
+      type: 'product/clear',
     });
     cancelAnimationFrame(this.reqRef);
     clearTimeout(this.timeoutId);
@@ -135,31 +130,22 @@ class ProductDetails extends Component {
       }
     });
   }
+  
+  handleSellOk = () => {
+    this.setState({ loading: true });
+    setTimeout(() => {
+      this.setState({ loading: false, visible: false });
+    }, 3000);
+  }
 
-  selectDate = type => {
-    const { dispatch } = this.props;
+  showModal = () => {
     this.setState({
-      rangePickerValue: getTimeDistance(type),
+      visible: true,
     });
-
-    dispatch({
-      type: 'chart/fetchSalesData',
-    });
-  };
-
-  isActive(type) {
-    const { rangePickerValue } = this.state;
-    const value = getTimeDistance(type);
-    if (!rangePickerValue[0] || !rangePickerValue[1]) {
-      return '';
-    }
-    if (
-      rangePickerValue[0].isSame(value[0], 'day') &&
-      rangePickerValue[1].isSame(value[1], 'day')
-    ) {
-      return styles.currentDate;
-    }
-    return '';
+  }
+  
+  handleSellCancel = () => {
+    this.setState({ visible: false });
   }
 
   getBase64(img, callback) {
@@ -197,30 +183,37 @@ class ProductDetails extends Component {
   };
 
   render() {
+    const { productDetails, contract } = this.props;
+    let productData = {};
+    if (productDetails) {
+      productData = productDetails.product;
+    }
+    const { visible, loading } = this.state;
     return (
         <div>
         <Row>
             <Button type="primary" icon="edit" size='large'>Edit</Button>
-            <Button type="primary" icon="tag" size='large'>Sell</Button>
+            <Button type="primary" icon="tag" size='large' onClick={this.showModal}>Sell</Button>
         </Row>
         <Row>
             <Col>
-                <Card
+                 {productData && <Card 
                     style={{ float:'left', height:486, width: 500}}
                     cover={
                     <img
                         className={styles.introImg}
                         alt="example"
-                        src="https://dongcokho1212.files.wordpress.com/2015/07/113.jpg"
+                        src={productData.ImgUrl}
                     />
                     }
                 >
                     <Meta
-                    avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
-                    title="Andy Simsons"
-                    description={<Link>This is the description</Link>}
+                    avatar={<Avatar src={productData.Creator.AvatarUrl} />}
+                    title={productData.Creator.UserName}
+                    description={<Link>{productData.Name}</Link>}
                     />
                 </Card>
+                }
             </Col>
             <Col>
                 <div>
@@ -237,6 +230,42 @@ class ProductDetails extends Component {
         <Row>
 
         </Row>
+        <Modal
+          visible={visible}
+          title="Title"
+          onOk={this.handleSellOk}
+          onCancel={this.handleSellCancel}
+          footer={[
+            <Button key="back" size="large" onClick={this.handleSellCancel}>Return</Button>,
+            <Button key="submit" type="primary" size="large" loading={loading} onClick={this.handleSellOk}>
+              Submit
+            </Button>,
+          ]}
+        >
+                <Form layout='vertical'
+                >
+                  <Form.Item label="Price">
+                  <Input.Group compact>
+                      <Select defaultValue="ETH">
+                          <Option value="ETH">ETH</Option>
+                          <Option value="FLD">FLD</Option>
+                      </Select>
+                      <InputNumber min={1} max={180} defaultValue={7} style={{ width: 300, textAlign: 'center' }} placeholder="Minimum" />               
+                      </Input.Group>
+                  </Form.Item>
+                  <Form.Item label="Duration">
+                      <RangePicker
+                      ranges={{
+                          Today: [moment(), moment()],
+                          'This Month': [moment().startOf('month'), moment().endOf('month')],
+                      }}
+                      showTime
+                      format="YYYY/MM/DD HH:mm:ss"
+                      />
+                  </Form.Item>
+                  {contract && <Card>{contract.address}</Card>}
+                </Form>
+        </Modal>
         </div>
     );
   }
