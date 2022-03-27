@@ -3,10 +3,10 @@ import { queryTopProduct,
         createSale, 
         getProduct,
         queryProductContracts,
-        updateProductContract, 
+        updateProductContract,
         createProductContract } from '@/services/product';
 
-import { connectContract } from '@/services/nft';
+import { connectContract, setTokenPrice, buyNftwithPrice, getTransaction } from '@/services/nft';
 import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
 export default {
@@ -16,7 +16,8 @@ export default {
     topProduct: {},
     productDetails:{},
     sale:{},
-    productContracts:[]
+    productContracts:[],
+    ethContract:undefined,
   },
 
   effects: {
@@ -75,14 +76,51 @@ export default {
 
       *queryContract({ payload, callback }, { call, put }) {
         try {
-        const response = yield call(connectContract, payload);
-        console.log(response)
-        if (callback && typeof callback === 'function') {
-          callback(response)
-        }
+          const response = yield call(connectContract, payload);
+          console.log(response)
+          if (callback && typeof callback === 'function') {
+            callback(response)
+          }
+          yield put({
+              type: 'saveEthContract',
+              payload: response,
+            });
         } catch(error) {
           console.log(error);
+        }
+      },
 
+      *setPrice({ payload, callback }, { call, put }) {
+        try {
+          const response = yield call(setTokenPrice, payload);
+          console.log(response)
+          if (callback && typeof callback === 'function') {
+            callback(response)
+          }
+        } catch(error) {
+          console.log(error);
+        }
+      },
+      *buyNft({ payload, callback }, { call, put }) {
+        try {
+          const response = yield call(buyNftwithPrice, payload);
+          console.log(response)
+          if (callback && typeof callback === 'function') {
+            callback(response)
+          }
+        } catch(error) {
+          console.log(error);
+        }
+      },
+      *getTrans({ payload, callback }, { call, put }) {
+        try {
+          const response = yield call(getTransaction, payload);
+          console.log(response)
+          if (callback && typeof callback === 'function') {
+            callback(response)
+          }
+        } catch(error) {
+          console.log(error);
         }
       },
     *fetchTopProduct(_, { call, put }) {
@@ -140,6 +178,12 @@ export default {
         return {
           ...state,
           sale: action.payload.result
+        };
+      },
+      saveEthContract(state, action) {
+        return {
+          ...state,
+          ethContract: action.payload.result
         };
       },
     clear() {

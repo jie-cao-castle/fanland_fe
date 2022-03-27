@@ -42,6 +42,7 @@ for (let i = 0; i < 7; i += 1) {
   contract: eth.contract,
   chainId: eth.chainId,
   productContracts: product.productContracts,
+  ethContract: product.ethContract,
 }))
 @Form.create()
 class ProductDetails extends Component {
@@ -183,13 +184,15 @@ class ProductDetails extends Component {
 
   handleBuy = (e) => {
     e.preventDefault();
-    const { dispatch, productData } = this.props;
+    const { dispatch, productContracts } = this.props;
     dispatch({
-      type: 'eth/buyNft',
+      type: 'product/buyNft',
       payload: {
         price: 0.05,
+        contractAddress: productContracts[0].ContractAddress,
       },
       callback: (response) => {
+        /*
         if (response.transactionHash) {
           dispatch({
             type: 'product/createNftOrder',
@@ -199,11 +202,81 @@ class ProductDetails extends Component {
             }
           });
         }
+        */
+      }
+    });
+  }
+
+  handleGetTransaction = (e) => {
+    e.preventDefault();
+    const { dispatch, productContracts } = this.props;
+    dispatch({
+      type: 'product/getTrans',
+      payload: {
+        transactionHash: 'aaa'
+      },
+      callback: (response) => {
+        /*
+        if (response.transactionHash) {
+          dispatch({
+            type: 'product/createNftOrder',
+            payload: {
+              ...productData,
+              transactionHash
+            }
+          });
+        }
+        */
       }
     });
   }
 
   handleSale = (e) => {
+    const { dispatch, productDetails,chainId, productContracts, currentUser } = this.props;
+    e.preventDefault();
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        console.log('Received values of form: ', values);
+
+        dispatch({
+          type: 'product/setPrice',
+          payload: {
+            contractAddress: productContracts[0].ContractAddress,
+          },
+          callback: (response) => {
+            if (response && response.hash) {
+              console.log("setPrice", response)
+              dispatch({
+                type: 'product/createSale',
+                payload: {
+                  productId: productDetails.product.Id,
+                  chainId :  chainId,
+                  chainCode:"ETH",
+                  contractId: productContracts[0].Id,
+                  price:values.price * 1000000,
+                  priceUnit: 6,
+                  startTime: values.saleTimeRange[0].format(),
+                  endTime:values.saleTimeRange[0].format(),
+                  effectiveTime:values.saleTimeRange[0].format(),
+                  status: 0,
+                  fromUserId: currentUser.Id
+                },
+                callback: (response) => {
+                  if (response && response.success) {
+                      message.success('成功创建NFT');
+                      this.setState({ loading: false, visible: false });
+                  }
+                }
+              });
+            }
+          }
+        });
+
+      }
+    });
+  }
+  
+  handleSale1 = (e) => {
     const { dispatch, productDetails,chainId, productContracts, currentUser } = this.props;
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
@@ -308,6 +381,8 @@ class ProductDetails extends Component {
         <Row>
             <Button type="primary" icon="edit" size='large'>Edit</Button>
             <Button type="primary" icon="tag" size='large' onClick={this.showModal}>Sell</Button>
+            <Button type="primary" icon="tag" size='large' onClick={this.handleBuy}>Buy</Button>
+            <Button type="primary" icon="tag" size='large' onClick={this.handleGetTransaction}>GetTrans</Button>
         </Row>
         <Row>
             <Col>
