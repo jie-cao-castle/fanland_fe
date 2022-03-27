@@ -240,8 +240,15 @@ class ProductDetails extends Component {
           dispatch({
             type: 'product/createNftOrder',
             payload: {
-              ...productData,
-              transactionHash
+              transactionHash:response.hash,
+              ProductId:productContracts[0].ProductId,
+              nftKey:"1",
+              price:1,
+              priceUnit:10000000,
+              amount:1,
+              status:0,
+              chainId:productContracts[0].ChainId,
+              chainCode:productContracts[0].ChainCode
             }
           });
         }
@@ -310,39 +317,6 @@ class ProductDetails extends Component {
                   }
                 }
               });
-            }
-          }
-        });
-
-      }
-    });
-  }
-  
-  handleSale1 = (e) => {
-    const { dispatch, productDetails,chainId, productContracts, currentUser } = this.props;
-    e.preventDefault();
-    this.props.form.validateFieldsAndScroll((err, values) => {
-      if (!err) {
-        console.log('Received values of form: ', values);
-        dispatch({
-          type: 'product/createSale',
-          payload: {
-            productId: productDetails.product.Id,
-            chainId :  chainId,
-            chainCode:"ETH",
-            contractId: productContracts[0].Id,
-            price:values.price * 1000000,
-            priceUnit: 6,
-            startTime: values.saleTimeRange[0].format(),
-            endTime:values.saleTimeRange[0].format(),
-            effectiveTime:values.saleTimeRange[0].format(),
-            status: 0,
-            fromUserId: currentUser.Id
-          },
-          callback: (response) => {
-            if (response && response.success) {
-                message.success('成功创建NFT');
-                this.setState({ loading: false, visible: false });
             }
           }
         });

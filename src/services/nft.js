@@ -93,12 +93,12 @@ export async function buyNftwithPrice(params) {
 
     // See: https://ropsten.etherscan.io/tx/0xaf0068dcf728afa5accd02172867627da4e6f946dfb8174a7be31f01b11d5364
     console.log(tx.hash);
+    return tx
 }
 
 export async function getTransaction(params) {
-    var provider = new ethers.providers.getDefaultProvider();
     const ethersProvider = new ethers.providers.Web3Provider(window.ethereum, 'any');
-    var transactionHash = "0x0b1eae8235a8a25947aecec8a5e802e7ace4b9f86cd03813b65d42b3fc17709a";
+    var transactionHash = params.transactionHash;
 
     let transaction = await ethersProvider.getTransaction(transactionHash);
     console.log(transaction)

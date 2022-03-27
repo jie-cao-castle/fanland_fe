@@ -134,8 +134,8 @@ export default {
         payload: response,
       });
     },
-    *createNftOrder(_, { call, put }) {
-      const response = yield call(addNftOrder);
+    *createNftOrder({ payload, callback }, { call, put }) {
+      const response = yield call(addNftOrder, payload);
       yield put({
         type: 'saveNftOrder',
         payload: response,
@@ -202,8 +202,10 @@ export default {
         };
       },
       saveSale(state, action) {
+        console.log("saveSale", state);
         return {
           ...state,
+          
           sale: action.payload.result
         };
       },

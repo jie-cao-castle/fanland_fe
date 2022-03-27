@@ -51,6 +51,7 @@ class MyProductDetails extends Component {
         loading: false,
         visible: false,
         nftOrders: [],
+        productSales:[],
    };
   constructor(props) {
     super(props);
@@ -228,53 +229,6 @@ class MyProductDetails extends Component {
     });
   };
 
-  handleBuy = (e) => {
-    e.preventDefault();
-    const { dispatch, productContracts } = this.props;
-    dispatch({
-      type: 'product/buyNft',
-      payload: {
-        price: 0.05,
-        contractAddress: productContracts[0].ContractAddress,
-      },
-      callback: (response) => {
-        if (response && response.hash) {
-          dispatch({
-            type: 'product/createNftOrder',
-            payload: {
-              ...productData,
-              transactionHash
-            }
-          });
-        }
-      }
-    });
-  }
-
-  handleGetTransaction = (e) => {
-    e.preventDefault();
-    const { dispatch, productContracts } = this.props;
-    dispatch({
-      type: 'product/getTrans',
-      payload: {
-        transactionHash: 'aaa'
-      },
-      callback: (response) => {
-        /*
-        if (response.transactionHash) {
-          dispatch({
-            type: 'product/createNftOrder',
-            payload: {
-              ...productData,
-              transactionHash
-            }
-          });
-        }
-        */
-      }
-    });
-  }
-
   handleSale = (e) => {
     const { dispatch, productDetails,chainId, productContracts, currentUser } = this.props;
     e.preventDefault();
@@ -390,8 +344,7 @@ class MyProductDetails extends Component {
     const {
       form: { getFieldDecorator },
     } = this.props;
-    const { visible, loading, nftOrders } = this.state;
-    console.log(nftOrders)
+    const { visible, loading, nftOrders, productSales } = this.state;
     return (
         <div>
         <Row>
