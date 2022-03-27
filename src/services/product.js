@@ -50,3 +50,12 @@ export async function createProductContract(params) {
       },
     });
 }
+
+export async function updateProductContract(params) {
+  return request('/api/v1/asset/updateContract', {
+      method: 'POST',
+      body: {
+        ...params,
+      },
+    });
+}

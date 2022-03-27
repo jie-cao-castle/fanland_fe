@@ -2,7 +2,8 @@ import { queryTopProduct,
         createProduct,
         createSale, 
         getProduct,
-        queryProductContracts, 
+        queryProductContracts,
+        updateProductContract, 
         createProductContract } from '@/services/product';
 
 import { connectContract } from '@/services/nft';
@@ -61,11 +62,24 @@ export default {
           });
         }
       },
+      *updateContract({ payload }, { call, put }) {
+        console.log(payload)
+        const response = yield call(updateProductContract, payload);
+        if (response && response.success) {
+        yield put({
+            type: 'saveContract',
+            payload: response,
+          });
+        }
+      },
 
-      *queryContract({ payload }, { call, put }) {
+      *queryContract({ payload, callback }, { call, put }) {
         try {
         const response = yield call(connectContract, payload);
         console.log(response)
+        if (callback && typeof callback === 'function') {
+          callback(response)
+        }
         } catch(error) {
           console.log(error);
 

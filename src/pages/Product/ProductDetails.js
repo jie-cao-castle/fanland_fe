@@ -118,6 +118,16 @@ class ProductDetails extends Component {
                 payload: {
                   contractAddress: contract.ContractAddress,
                 },
+                callback: (response) => {
+                  console.log("queryContract", response)
+                      dispatch({
+                        type: 'product/updateContract',
+                        payload: {
+                          id: contract.Id,
+                          status: 1
+                        },
+                      });
+                }
               });
             }
           }
