@@ -4,6 +4,9 @@ import { queryTopProduct,
         getProduct,
         queryProductContracts,
         updateProductContract,
+        queryNftOrders,
+        addNftOrder,
+        updateOrders,
         createProductContract } from '@/services/product';
 
 import { connectContract, setTokenPrice, buyNftwithPrice, getTransaction } from '@/services/nft';
@@ -18,6 +21,7 @@ export default {
     sale:{},
     productContracts:[],
     ethContract:undefined,
+    nftOrders:[],
   },
 
   effects: {
@@ -130,6 +134,29 @@ export default {
         payload: response,
       });
     },
+    *createNftOrder(_, { call, put }) {
+      const response = yield call(addNftOrder);
+      yield put({
+        type: 'saveNftOrder',
+        payload: response,
+      });
+    },
+    *getNftOrders({ payload, callback }, { call, put }) {
+      const response = yield call(queryNftOrders, payload);
+      if (callback && typeof callback === 'function') {
+        callback(response)
+      }
+      yield put({
+        type: 'saveNftOrder',
+        payload: response,
+      });
+    },
+    *updateNftOrders({ payload, callback }, { call, put }) {
+      const response = yield call(updateOrders, payload);
+      if (callback && typeof callback === 'function') {
+        callback(response)
+      }
+    },
     *fetchProductContracts({ payload, callback }, { call, put }) {
       const response = yield call(queryProductContracts, payload);
       if (callback && typeof callback === 'function') {
@@ -184,6 +211,13 @@ export default {
         return {
           ...state,
           ethContract: action.payload.result
+        };
+      },
+      saveNftOrder(state, action) {
+        console.log("saveNftOrder", state);
+        return {
+          ...state,
+          nftOrders: action.payload.result
         };
       },
     clear() {

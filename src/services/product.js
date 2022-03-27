@@ -59,3 +59,29 @@ export async function updateProductContract(params) {
       },
     });
 }
+
+export async function addNftOrder(params) {
+  return request('/api/v1/asset/addNftOrder', {
+      method: 'POST',
+      body: {
+        ...params,
+      },
+    });
+}
+export async function queryNftOrders(params) {
+  return request('/api/v1/asset/nftOrders', {
+      method: 'POST',
+      body: {
+        ...params,
+      },
+    });
+}
+
+export async function updateOrders(params) {
+  return request('/api/v1/asset/updateNftOrder', {
+      method: 'POST',
+      body: {
+        ...params,
+      },
+    });
+}

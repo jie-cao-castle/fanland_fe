@@ -50,6 +50,7 @@ class ProductDetails extends Component {
         imageUrl:{},
         loading: false,
         visible: false,
+        nftOrders: [],
    };
   constructor(props) {
     super(props);
@@ -135,6 +136,49 @@ class ProductDetails extends Component {
         }
       });
       dispatch({
+        type: 'product/getNftOrders',
+        payload: {
+          productId: parseInt(id, 10),
+        },
+        callback: (response) => {
+          console.log("getNftOrders", response)
+  
+          if (response.success && response.result && response.result.length > 0) {
+            let orders = response.result;
+            for (let i = 0; i < orders.length; i++) {
+              console.log("getNftOrder", orders[i])
+              if (orders[i].Status == 0) {
+                dispatch({
+                  type: 'product/getTrans',
+                  payload: {
+                    transactionHash: orders[i].TransactionHash,
+                  },
+                  callback: (response) => {
+                    console.log("getTrans", response)
+                        dispatch({
+                          type: 'product/updateNftOrders',
+                          payload: {
+                            id: orders[i].Id,
+                            status: response.status
+                          },
+                          callback: (response) => {
+                            console.log("updateNftOrder", response)
+                            if (response && response.success) {
+                              orders[i].Status = 0;
+                            }
+                          }
+                        });
+                  }
+                });
+              }
+            }
+
+            this.setState({ nftOrders: orders });
+          }
+
+        }
+      });
+      dispatch({
         type: 'eth/queryChainId',
       });
   }
@@ -159,7 +203,7 @@ class ProductDetails extends Component {
         payload: {
           name: 'TST',
           symbol: 'TST',
-          initialNumber: 10,
+          initialNumber: 1,
         },
         callback: (response) => {
           console.log("deploycontract", response)
@@ -192,8 +236,7 @@ class ProductDetails extends Component {
         contractAddress: productContracts[0].ContractAddress,
       },
       callback: (response) => {
-        /*
-        if (response.transactionHash) {
+        if (response && response.hash) {
           dispatch({
             type: 'product/createNftOrder',
             payload: {
@@ -202,7 +245,6 @@ class ProductDetails extends Component {
             }
           });
         }
-        */
       }
     });
   }
@@ -363,6 +405,7 @@ class ProductDetails extends Component {
   render() {
     const { productDetails, contract, accounts, chainId, productContracts } = this.props;
     console.log(chainId)
+
     let productData = {};
     if (productDetails) {
       productData = productDetails.product;
@@ -375,7 +418,8 @@ class ProductDetails extends Component {
     const {
       form: { getFieldDecorator },
     } = this.props;
-    const { visible, loading } = this.state;
+    const { visible, loading, nftOrders } = this.state;
+    console.log(nftOrders)
     return (
         <div>
         <Row>
@@ -424,9 +468,9 @@ class ProductDetails extends Component {
                 <div style = {{display:'none'}}>{chainId}</div>
             </Col>
         </Row>
-        <Row>
-
-        </Row>
+        {nftOrders && nftOrders.length > 0 && <Row>
+          <Card>{nftOrders.length}</Card>
+        </Row>}
         <Modal
           visible={visible}
           title="创建NFT合约"
