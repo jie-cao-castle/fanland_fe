@@ -1,13 +1,16 @@
-import { queryTopProduct, 
-        createProduct,
-        createSale, 
-        getProduct,
-        queryProductContracts,
-        updateProductContract,
-        queryNftOrders,
-        addNftOrder,
-        updateOrders,
-        createProductContract } from '@/services/product';
+import {
+  queryTopProduct,
+  createProduct,
+  createSale,
+  getProduct,
+  queryProductContracts,
+  updateProductContract,
+  queryNftOrders,
+  addNftOrder,
+  updateOrders,
+  createProductContract,
+  queryTrendingProducts
+} from '@/services/product';
 
 import { connectContract, setTokenPrice, buyNftwithPrice, getTransaction } from '@/services/nft';
 import { routerRedux } from 'dva/router';
@@ -17,11 +20,12 @@ export default {
 
   state: {
     topProduct: {},
-    productDetails:{},
-    sale:{},
-    productContracts:[],
-    ethContract:undefined,
-    nftOrders:[],
+    trendingProducts: [],
+    productDetails: {},
+    sale: {},
+    productContracts: [],
+    ethContract: undefined,
+    nftOrders: [],
   },
 
   effects: {
@@ -33,100 +37,102 @@ export default {
       });
     },
 
-    *create({ payload }, { call, put }) {
-        const response = yield call(createProduct, payload);
-        if (response && response.success) {
-        yield put(routerRedux.push({
-            pathname: '/product/details',
-            search: stringify({
-              id:response.result.Id,
-            }),
-          }));
-        }
-      },
 
-      *createSale({ payload, callback }, { call, put }) {       
-        const response = yield call(createSale, payload);
+
+    *create({ payload }, { call, put }) {
+      const response = yield call(createProduct, payload);
+      if (response && response.success) {
+        yield put(routerRedux.push({
+          pathname: '/product/details',
+          search: stringify({
+            id: response.result.Id,
+          }),
+        }));
+      }
+    },
+
+    *createSale({ payload, callback }, { call, put }) {
+      const response = yield call(createSale, payload);
+      if (callback && typeof callback === 'function') {
+        callback(response)
+      }
+      if (response && response.success) {
+        yield put({
+          type: 'saveSale',
+          payload: response,
+        });
+      }
+    },
+    *createContract({ payload }, { call, put }) {
+      console.log(payload)
+      const response = yield call(createProductContract, payload);
+      if (response && response.success) {
+        yield put({
+          type: 'saveContract',
+          payload: response,
+        });
+      }
+    },
+    *updateContract({ payload }, { call, put }) {
+      console.log(payload)
+      const response = yield call(updateProductContract, payload);
+      if (response && response.success) {
+        yield put({
+          type: 'saveContract',
+          payload: response,
+        });
+      }
+    },
+
+    *queryContract({ payload, callback }, { call, put }) {
+      try {
+        const response = yield call(connectContract, payload);
+        console.log(response)
         if (callback && typeof callback === 'function') {
           callback(response)
         }
-        if (response && response.success) {
-          yield put({
-              type: 'saveSale',
-              payload: response,
-            });
-        }
-      },
-      *createContract({ payload }, { call, put }) {
-        console.log(payload)
-        const response = yield call(createProductContract, payload);
-        if (response && response.success) {
         yield put({
-            type: 'saveContract',
-            payload: response,
-          });
-        }
-      },
-      *updateContract({ payload }, { call, put }) {
-        console.log(payload)
-        const response = yield call(updateProductContract, payload);
-        if (response && response.success) {
-        yield put({
-            type: 'saveContract',
-            payload: response,
-          });
-        }
-      },
+          type: 'saveEthContract',
+          payload: response,
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    },
 
-      *queryContract({ payload, callback }, { call, put }) {
-        try {
-          const response = yield call(connectContract, payload);
-          console.log(response)
-          if (callback && typeof callback === 'function') {
-            callback(response)
-          }
-          yield put({
-              type: 'saveEthContract',
-              payload: response,
-            });
-        } catch(error) {
-          console.log(error);
+    *setPrice({ payload, callback }, { call, put }) {
+      try {
+        const response = yield call(setTokenPrice, payload);
+        console.log(response)
+        if (callback && typeof callback === 'function') {
+          callback(response)
         }
-      },
-
-      *setPrice({ payload, callback }, { call, put }) {
-        try {
-          const response = yield call(setTokenPrice, payload);
-          console.log(response)
-          if (callback && typeof callback === 'function') {
-            callback(response)
-          }
-        } catch(error) {
-          console.log(error);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    *buyNft({ payload, callback }, { call, put }) {
+      try {
+        const response = yield call(buyNftwithPrice, payload);
+        console.log(response)
+        if (callback && typeof callback === 'function') {
+          callback(response)
         }
-      },
-      *buyNft({ payload, callback }, { call, put }) {
-        try {
-          const response = yield call(buyNftwithPrice, payload);
-          console.log(response)
-          if (callback && typeof callback === 'function') {
-            callback(response)
-          }
-        } catch(error) {
-          console.log(error);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    *getTrans({ payload, callback }, { call, put }) {
+      try {
+        const response = yield call(getTransaction, payload);
+        console.log(response)
+        if (callback && typeof callback === 'function') {
+          callback(response)
         }
-      },
-      *getTrans({ payload, callback }, { call, put }) {
-        try {
-          const response = yield call(getTransaction, payload);
-          console.log(response)
-          if (callback && typeof callback === 'function') {
-            callback(response)
-          }
-        } catch(error) {
-          console.log(error);
-        }
-      },
+      } catch (error) {
+        console.log(error);
+      }
+    },
     *fetchTopProduct(_, { call, put }) {
       const response = yield call(queryTopProduct);
       yield put({
@@ -134,6 +140,15 @@ export default {
         payload: response,
       });
     },
+
+    *fetchTrendingProducts(_, { call, put }) {
+      const response = yield call(queryTrendingProducts);
+      yield put({
+        type: 'saveTrendingProducts',
+        payload: response,
+      });
+    },
+
     *createNftOrder({ payload, callback }, { call, put }) {
       const response = yield call(addNftOrder, payload);
       yield put({
@@ -183,45 +198,51 @@ export default {
       };
     },
     saveTopProduct(state, action) {
-        console.log(action)
-        return {
-          ...state,
-          topProduct: action.payload.result,
-        };
-      },
-      saveContracts(state, action) {
-        return {
-          ...state,
-          productContracts: action.payload.result,
-        };
-      },
-      saveContract(state, action) {
-        return {
-          ...state,
-          productContracts: [action.payload.result]
-        };
-      },
-      saveSale(state, action) {
-        console.log("saveSale", state);
-        return {
-          ...state,
-          
-          sale: action.payload.result
-        };
-      },
-      saveEthContract(state, action) {
-        return {
-          ...state,
-          ethContract: action.payload.result
-        };
-      },
-      saveNftOrder(state, action) {
-        console.log("saveNftOrder", state);
-        return {
-          ...state,
-          nftOrders: action.payload.result
-        };
-      },
+      console.log(action)
+      return {
+        ...state,
+        topProduct: action.payload.result,
+      };
+    },
+    saveTrendingProducts(state, action) {
+      return {
+        ...state,
+        trendingProducts: action.payload.result,
+      };
+    },
+    saveContracts(state, action) {
+      return {
+        ...state,
+        productContracts: action.payload.result,
+      };
+    },
+    saveContract(state, action) {
+      return {
+        ...state,
+        productContracts: [action.payload.result]
+      };
+    },
+    saveSale(state, action) {
+      console.log("saveSale", state);
+      return {
+        ...state,
+
+        sale: action.payload.result
+      };
+    },
+    saveEthContract(state, action) {
+      return {
+        ...state,
+        ethContract: action.payload.result
+      };
+    },
+    saveNftOrder(state, action) {
+      console.log("saveNftOrder", state);
+      return {
+        ...state,
+        nftOrders: action.payload.result
+      };
+    },
     clear() {
       return {
         visitData: [],

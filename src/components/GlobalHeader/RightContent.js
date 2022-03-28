@@ -194,7 +194,7 @@ class GlobalHeaderRight extends PureComponent {
               style={{ display: 'inline-block'}}
               >
               <Menu.Item key="1">探索</Menu.Item>
-              <Menu.Item key="2">创建</Menu.Item>
+              <Menu.Item key="2">创造</Menu.Item>
               {accounts && <Menu.Item >{accounts[0]}</Menu.Item>}
             </Menu>
 

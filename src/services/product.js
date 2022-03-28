@@ -16,6 +16,9 @@ export async function getProduct(params) {
 export async function queryTopProduct() {
   return request('/api/v1/products/top');
 }
+export async function queryTrendingProducts() {
+  return request('/api/v1/products/trending');
+}
 
 export async function createProduct(params) {
     return request('/api/v1/products/add', {
