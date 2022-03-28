@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi/locale';
+
 import Link from 'umi/link';
 import {
   Row,
@@ -132,15 +133,15 @@ class Landing extends Component {
         <div className={styles.introContainer}>
           <div className={styles.intro}></div>
           <Row align="center">
-            <Col span={10}>
+            <Col span={7} offset={6}>
               <div className={styles.introTxt}>
                 <div
                   className={styles.introMainTxt}>
-                  Discover, collect, and sell extraordinary NFTs
+                  探索、收集、出售独一无二的数字藏品NFT
                 </div>
                 <div
                   className={styles.introSubTxt}>
-                  Fanland is the world's first and largest NFT marketplace
+                  繁澜宇宙是全亚洲最大的数字藏品NFT平台
                 </div>          
 
                 <Button type="primary" size="large"
@@ -159,7 +160,8 @@ class Landing extends Component {
               </Col>
             <Col span={10}>
               {topProduct.Name && <Card
-                style={{ float:'right', height:486, width: 500}}
+                style={{ height:'auto', marginTop:'15px', width: 500}}
+                className={styles.introImgContainer}
                 cover={
                   <img
                     className={styles.introImg}
@@ -170,8 +172,8 @@ class Landing extends Component {
               >
                 <Meta
                   avatar={<Avatar src={topProduct.Creator.AvatarUrl} />}
-                  title={topProduct.Creator.UserName}
-                  description={<Link>{topProduct.Desc}</Link>}
+                  title={topProduct.Name}
+                  description={<Link>{topProduct.Creator.UserName}</Link>}
                 />
               </Card>}
             </Col>

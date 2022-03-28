@@ -54,7 +54,7 @@ class UserLayout extends React.PureComponent {
                 <span className={styles.title}>Fanland</span>
               </Link>
             </div>
-            <div className={styles.desc}>Fanland是全亚洲最活跃的NFT艺术品社区</div>
+            <div className={styles.desc}>Fanland是全亚洲最活跃的数字藏品NFT社区</div>
           </div>
           {children}
         </div>

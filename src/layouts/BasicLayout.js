@@ -150,21 +150,7 @@ class BasicLayout extends React.PureComponent {
   }
 
   getPageTitle = pathname => {
-    let currRouterData = null;
-    // match params path
-    Object.keys(this.breadcrumbNameMap).forEach(key => {
-      if (pathToRegexp(key).test(pathname)) {
-        currRouterData = this.breadcrumbNameMap[key];
-      }
-    });
-    if (!currRouterData) {
-      return 'Ant Design Pro';
-    }
-    const message = formatMessage({
-      id: currRouterData.locale || currRouterData.name,
-      defaultMessage: currRouterData.name,
-    });
-    return `${message} - Ant Design Pro`;
+    return `Fanland 全亚洲最大的数字藏品NFT社区`;
   };
 
   getLayoutStyle = () => {
