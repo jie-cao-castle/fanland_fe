@@ -1,44 +1,28 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
-import { formatMessage, FormattedMessage } from 'umi/locale';
-
+import { formatMessage } from 'umi/locale';
+import { stringify } from 'qs';
 import Link from 'umi/link';
 import {
   Row,
   Col,
-  Icon,
   Card,
-  Tabs,
-  DatePicker,
-  List,
-  Menu,
-  Dropdown,
   Avatar,
   Button,
   Carousel
 } from 'antd';
 const { Meta } = Card;
-import NumberedAvatar from '@/components/NumberAvatar';
 import { getTimeDistance } from '@/utils/utils';
 
 import MUICard from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
-import MUIButton from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
 import styles from './Landing.less';
-
-const rankingListData = [];
-for (let i = 0; i < 7; i += 1) {
-  rankingListData.push({
-    title: `工专路 ${i} 号店`,
-    total: 323234,
-  });
-}
 
 @connect(({ product, loading, eth }) => ({
   topProduct: product.topProduct,
@@ -49,25 +33,16 @@ for (let i = 0; i < 7; i += 1) {
 class Landing extends Component {
   constructor(props) {
     super(props);
-    this.rankingListData = [];
-    for (let i = 0; i < 7; i += 1) {
-      this.rankingListData.push({
-        title: formatMessage({ id: 'app.analysis.test' }, { no: i }),
-        total: 323234,
-      });
-    }
     this.state = {
       salesType: 'all',
       currentTabKey: '',
       loading: true,
-      rangePickerValue: getTimeDistance('year'),
     };
   }
 
   state = {
     salesType: 'all',
     currentTabKey: '',
-    rangePickerValue: getTimeDistance('year'),
   };
 
   componentDidMount() {
@@ -206,11 +181,13 @@ class Landing extends Component {
                 {carouselTab1Data.map(item => (
                   <Col span={4} offset={1}>
                     <MUICard sx={{ maxWidth: 375 }}>
-                      <CardMedia
-                        component="img"
-                        height="140"
-                        image={item.ImgUrl}
-                      />
+                    <Link to={`/product/details?id=${item.Id}`}>
+                        <CardMedia
+                          component="img"
+                          height="140"
+                          image={item.ImgUrl}
+                        />
+                      </Link>
                       <CardContent>
                         <Typography gutterBottom variant="h5" component="div">
                         {item.Name}
@@ -236,11 +213,13 @@ class Landing extends Component {
                   {carouselTab2Data.map(item => (
                       <Col span={4} offset={1}>
                         <MUICard sx={{ maxWidth: 375 }}>
-                          <CardMedia
-                            component="img"
-                            height="140"
-                            image={item.ImgUrl}
-                          />
+                        <Link to={`/product/details?id=${item.Id}`}>
+                            <CardMedia
+                              component="img"
+                              height="140"
+                              image={item.ImgUrl}
+                            />
+                          </Link>
                           <CardContent>
                             <Typography gutterBottom variant="h5" component="div">
                             {item.Name}
@@ -265,11 +244,13 @@ class Landing extends Component {
                   {carouselTab3Data.map(item => (
                           <Col span={4} offset={1}>
                             <MUICard sx={{ maxWidth: 375 }}>
-                              <CardMedia
-                                component="img"
-                                height="140"
-                                image={item.ImgUrl}
-                              />
+                            <Link to={`/product/details?id=${item.Id}`}>
+                                <CardMedia
+                                  component="img"
+                                  height="140"
+                                  image={item.ImgUrl}
+                                />
+                              </Link>
                               <CardContent>
                                 <Typography gutterBottom variant="h5" component="div">
                                 {item.Name}
