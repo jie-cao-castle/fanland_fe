@@ -119,7 +119,7 @@ class Landing extends Component {
       <div>
         <div className={styles.introContainer}>
           <div className={styles.intro}></div>
-          <Row align="center">
+          <Row justify="center">
             <Col span={7} offset={6}>
               <div className={styles.introTxt}>
                 <div

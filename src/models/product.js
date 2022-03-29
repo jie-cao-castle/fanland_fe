@@ -216,7 +216,7 @@ export default {
         productContracts: action.payload.result,
       };
     },
-    saveContract(state, action) {
+    saveContract(state, action) { 
       return {
         ...state,
         productContracts: [action.payload.result]
