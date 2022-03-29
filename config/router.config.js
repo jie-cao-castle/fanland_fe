@@ -34,6 +34,11 @@ export default [
             component: './Dashboard/Landing',
           },
           {
+            path: '/dashboard/Explore',
+            name: 'landing',
+            component: './Dashboard/Explore',
+          },
+          {
             path: '/dashboard/monitor',
             name: 'monitor',
             component: './Dashboard/Monitor',

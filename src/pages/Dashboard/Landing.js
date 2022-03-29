@@ -130,11 +130,12 @@ class Landing extends Component {
                   className={styles.introSubTxt}>
                   繁澜宇宙是全亚洲最大的数字藏品NFT平台
                 </div>
-
+                <a href="/dashboard/explore">
                 <Button type="primary" size="large"
                   style={{ width: '120px', marginLeft: '20px', marginRight: '30px', marginTop: '30px' }}>
                   探索
                 </Button>
+                </a>
                 <a href="/product/create">
                   <Button
                     style={{ width: '120px', marginTop: '30px' }}
