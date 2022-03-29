@@ -4,16 +4,18 @@ import { formatMessage, FormattedMessage } from 'umi/locale';
 import Link from 'umi/link';
 import {
   Card,
-  Tabs,
+  Tag,
   DatePicker,
   Input,
-  Avatar,
+  Collapse,
   Button,
   Modal,
   Row,
   Col,
   Select,
   InputNumber,
+  Table,
+  Tabs,
 } from 'antd';
 import moment from 'moment';
 const { Meta } = Card;
@@ -23,7 +25,18 @@ import styles from './MyProductDetails.less';
 import {
   chainCurrencyMap,
 } from '../../assets/constants.json'
+import Chip from '@mui/material/Chip';
+import { Paper } from '@mui/material';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import HubIcon from '@mui/icons-material/Hub';
 
 const { RangePicker } = DatePicker;
 const FormItem = Form.Item;
@@ -69,33 +82,92 @@ class MyProductDetails extends Component {
     currentTabKey: '',
     rangePickerValue: getTimeDistance('year'),
   };
-  columns = [
+
+  salsColumns = [
     {
-      title: '作品动态',
-      dataIndex: 'name',
+      title: '价格',
+      dataIndex: 'Price',
+      key: 'price',
     },
     {
-      title: '单价',
-      dataIndex: 'price',
+      title: 'Token类型',
+      dataIndex: 'ChainCode',
+      key: 'hainCode',
     },
     {
-        title: '数量',
-        dataIndex: 'unit',
+      title: '截止日期',
+      dataIndex: 'EndTime',
+      key: 'endTime',
     },
     {
-        title: 'From',
-        dataIndex: 'from',
+      title: '售卖方',
+      dataIndex: 'FromUserId',
+      key: 'fromUser',
     },
     {
-        title: 'To',
-        dataIndex: 'to',
-    },
-    {
-      title: '时间',
-      dataIndex: 'updatedAt',
-      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
-    },
+      title: '状态',
+      key: 'status',
+      dataIndex: 'Status',
+      render: (text, record) => {
+        let color = 'geekblue';
+        let txt = "提交中";
+        if (record.Status == 1) {
+          color = 'green';
+          txt = "售卖中"
+        } else if (record.Status == 2) {
+          color = 'volcano'
+          txt = "已截止"
+        }
+          return (
+          <Tag color={color} key={record.Id}>
+            {txt}
+          </Tag>
+          );
+        }
+      }
   ];
+
+  orderColumns = [
+    {
+      title: '数字藏品ID',
+      dataIndex: 'NftKey',
+      key: 'nftKey',
+    },
+    {
+      title: '成交价格',
+      dataIndex: 'Price',
+      key: 'price',
+    },
+    {
+      title: 'Token类型',
+      dataIndex: 'ChainCode',
+      key: 'hainCode',
+    },
+    {
+      title: '成交日期',
+      dataIndex: 'UpdateTime',
+      key: 'transactionTime',
+    },
+    {
+      title: '状态',
+      key: 'status',
+      dataIndex: 'Status',
+      render: (text, record) => {
+        let color = 'geekblue';
+        let txt = "区块链确认中";
+        if (record.Status == 1) {
+          color = 'green';
+          txt = "已完成"
+        }
+        return (
+          <Tag color={color} key={record.Id}>
+            {txt}
+          </Tag>
+          );
+        }
+      }
+  ];
+  
   componentDidMount() {
     const params = getPageQuery();
     let { id } = params;
@@ -325,12 +397,14 @@ class MyProductDetails extends Component {
     }
   };
 
+  
+
   render() {
     const { productDetails, contract, accounts, chainId, productContracts } = this.props;
     console.log(chainId)
 
     let productData = {};
-    let sales = {};
+    let sales = [];
     if (productDetails) {
       productData = productDetails.product;
       sales = productDetails.sales;
@@ -346,58 +420,114 @@ class MyProductDetails extends Component {
     } = this.props;
     const { visible, loading, nftOrders, productSales } = this.state;
     return (
+      
         <div>
-        <Row>
-            <Button type="primary" icon="edit" size='large'>编辑</Button>
-            <Button type="primary" icon="tag" size='large' onClick={this.showModal}>售卖</Button>
-        </Row>
-        <Row>
-            <Col>
-                 {productData && productData.Creator && <Card 
-                    style={{ float:'left'}}
-                    cover={
+           <Row>
+            <Col span={6} offset={3}>
+                 {productData && productData.Creator && 
+                 <Paper square={true}>
                     <img
-                        className={styles.introImg}
+                        className={styles.prodImg}
                         alt="example"
                         src={productData.ImgUrl}
                     />
-                    }
-                >
-                    <Meta
-                    avatar={<Avatar src={productData.Creator.AvatarUrl} />}
-                    title={productData.Creator.UserName}
-                    description={<Link>{productData.Name}</Link>}
-                    />
-                </Card>
+                </Paper>
                 }
-
-                {hasContracts && <Card title='合约信息'
-                    style={{ float:'left'}}>  
-                      <div>合约地址 {productContracts[0].ContractAddress}</div>                    
-                      <div>合约状态 {productContracts[0].Status}</div>   
-                </Card>
-                }
+                  {productData && productData.Desc &&<div>
+                  <Accordion>
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      aria-controls="panel1a-content"
+                      id="panel1a-header"
+                    >
+                      <Typography>作品描述</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <Typography>{productData.Desc}</Typography>
+                    </AccordionDetails>
+                  </Accordion>
+                  <Accordion>
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      aria-controls="panel2a-content"
+                      id="panel2a-header"
+                    >
+                      <Typography>{`关于作者 - ` + productData.Creator.UserName}</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <Typography>{productData.Creator.UserDesc}
+                      </Typography>
+                    </AccordionDetails>
+                  </Accordion>
+                  {hasContracts && <Accordion>
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      aria-controls="panel3a-content"
+                      id="panel3a-header"
+                    >
+                      <Typography>NFT合约信息</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <Typography>
+                        <div>合约地址 {productContracts[0].ContractAddress}</div>                    
+                        <div>合约状态 {productContracts[0].Status}</div>   
+                        </Typography>
+                      </AccordionDetails>
+                  </Accordion>}
+                  </div>}
               </Col>
-              <Col>
-                <div>
-                    作品集
-                </div>
-                <div>
-                    伊吹五月
-                </div>
-                <div>
-                    拥有者
-                </div>
-                <div style = {{display:'none'}}>{chainId}</div>
-            </Col>
+              {productData && productData.Name &&<Col div style={{ marginLeft: '20px'}} span={7}>
+              <div>
+                <div className={styles.prodTtl}>{productData.Name}</div>
+                  <Stack style={{width: '100%'}} direction="row" spacing={1.5}>
+                    <Stack direction="row" spacing={1}>
+                      <PeopleAltIcon color="action" />
+                      <Typography>5人拥有这个藏品</Typography>
+                    </Stack>
+                    <Stack direction="row" spacing={1}>
+                    <HubIcon color="action" />
+                    <Typography>6个独立藏品</Typography>
+                    </Stack>
+
+                    <Stack direction="row" spacing={1}>
+                      <FavoriteIcon color="action" />
+                       <Typography>18人喜欢该作品</Typography>
+                    </Stack>
+                  </Stack>
+              </div>
+              <Stack direction="row" style={{marginTop: '10px'}} spacing={1}>
+                <Button  icon="edit" size='large'>编辑</Button>
+                <Button type="primary" icon="tag" size='large' onClick={this.showModal}>售卖</Button>
+              </Stack>
+              <Accordion expanded={true}>
+                    <AccordionSummary 
+                      expandIcon={<ExpandMoreIcon />}
+                      aria-controls="panel3a-content"
+                      id="panel3a-header"
+                    >
+                      <Typography>售卖信息</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <Table columns={this.salsColumns} dataSource={sales} />
+                    </AccordionDetails>
+                  </Accordion>
+                  <Accordion style={{marginTop: '15px'}} expanded={true}>
+                      <AccordionSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        aria-controls="panel1a-content"
+                        id="panel1a-header"
+                      >
+                        <Typography>交易记录</Typography>
+                      </AccordionSummary>
+                      <AccordionDetails>
+                      <Table columns={this.orderColumns} dataSource={nftOrders} />
+                      </AccordionDetails>
+                  </Accordion>
+            </Col>}
         </Row>
-        {nftOrders && nftOrders.length > 0 && <Row>
-          <Card>{nftOrders.length}</Card>
-        </Row>}
-        {sales && sales.length && <Card title="销售">{sales.length}</Card>}
         <Modal
           visible={visible}
-          title="创建NFT合约"
+          title="销售你的NFT"
           onOk={this.handleSale}
           onCancel={this.handleSellCancel}
           footer={[
