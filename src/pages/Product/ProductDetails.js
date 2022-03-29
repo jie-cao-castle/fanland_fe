@@ -25,7 +25,7 @@ import {
 const { Panel } = Collapse;
 import moment from 'moment';
 const { Meta } = Card;
-import { Form, Upload, Icon, message } from 'antd';
+import { Form, Carousel, message } from 'antd';
 import { getTimeDistance, getPageQuery } from '@/utils/utils';
 import styles from './ProductDetails.less';
 import {
@@ -41,6 +41,14 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import HubIcon from '@mui/icons-material/Hub';
+
+import MUICard from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
+import IconButton from '@mui/material/IconButton';
+import ShareIcon from '@mui/icons-material/Share';
+
 const { TabPane } = Tabs;
 const { RangePicker } = DatePicker;
 const FormItem = Form.Item;
@@ -60,6 +68,7 @@ for (let i = 0; i < 7; i += 1) {
   chainId: eth.chainId,
   productContracts: product.productContracts,
   ethContract: product.ethContract,
+  trendingProducts:product.trendingProducts,
 }))
 @Form.create()
 class ProductDetails extends Component {
@@ -197,6 +206,10 @@ class ProductDetails extends Component {
       });
       dispatch({
         type: 'eth/queryChainId',
+      });
+
+      dispatch({
+        type: 'product/fetchTrendingProducts',
       });
   }
 
@@ -497,7 +510,7 @@ class ProductDetails extends Component {
   
 
   render() {
-    const { productDetails, contract, accounts, chainId, productContracts } = this.props;
+    const { productDetails, contract, accounts, chainId, productContracts, trendingProducts } = this.props;
     let productData = {};
     if (productDetails) {
       productData = productDetails.product;
@@ -516,6 +529,22 @@ class ProductDetails extends Component {
     } = this.props;
     const { visible, loading, nftOrders } = this.state;
     console.log(nftOrders);
+    
+    let carouselTab1Data = [];
+    let carouselTab2Data = [];
+    let carouselTab3Data = [];
+    if (trendingProducts) {
+      for (let i = 0; i < 4; i++) {
+        carouselTab1Data.push(trendingProducts[i]);
+      }
+      for (let i = 4; i < 8; i++) {
+        carouselTab2Data.push(trendingProducts[i]);
+      }
+      for (let i = 8; i < 12; i++) {
+        carouselTab3Data.push(trendingProducts[i]);
+      }
+    }
+
 
     let visitData = [];
     const beginDay = new Date().getTime();
@@ -625,7 +654,7 @@ class ProductDetails extends Component {
                     </AccordionDetails>
                   </Accordion>}
 
-              {productSales && productSales.length > 0 && <Accordion expanded={true}>
+              <Accordion expanded={true}>
                     <AccordionSummary 
                       expandIcon={<ExpandMoreIcon />}
                       aria-controls="panel3a-content"
@@ -636,11 +665,8 @@ class ProductDetails extends Component {
                     <AccordionDetails>
                         <Table columns={this.salsColumns} dataSource={productSales} />
                     </AccordionDetails>
-                  </Accordion>}
-            </Col>}
-        </Row>
-        {nftOrders && nftOrders.length > 0 && <Row style={{marginTop: '15px'}}><Col span={13} offset={3}>
-          <Accordion expanded={true}>
+                  </Accordion>
+                  <Accordion style={{marginTop: '15px'}} expanded={true}>
                       <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
                         aria-controls="panel1a-content"
@@ -651,9 +677,112 @@ class ProductDetails extends Component {
                       <AccordionDetails>
                       <Table columns={this.orderColumns} dataSource={nftOrders} />
                       </AccordionDetails>
-          </Accordion>
-          </Col>
-        </Row>}
+                  </Accordion>
+            </Col>}
+        </Row>
+        {trendingProducts && trendingProducts.length >= 12 && <div className={styles.crsl}>
+            <div
+              className={styles.hotTxt}>
+                更多的热门数字藏品
+            </div>
+            <Carousel autoplay>
+              <div>
+                <Row>
+                {carouselTab1Data.map(item => (
+                  <Col span={4} offset={1}>
+                    <MUICard sx={{ maxWidth: 375 }}>
+                    <Link to={`/product/details?id=${item.Id}`}>
+                        <CardMedia
+                          component="img"
+                          height="140"
+                          image={item.ImgUrl}
+                        />
+                      </Link>
+                      <CardContent>
+                        <Typography gutterBottom variant="h5" component="div">
+                        {item.Name}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {item.Desc}
+                        </Typography>
+                      </CardContent>
+                      <CardActions disableSpacing>
+                        <IconButton aria-label="add to favorites">
+                          <FavoriteIcon />
+                        </IconButton>
+                        <IconButton aria-label="share">
+                          <ShareIcon />
+                        </IconButton>
+                      </CardActions>
+                    </MUICard>
+                  </Col>
+                ))}
+                </Row>
+              </div>
+              <div>
+                  {carouselTab2Data.map(item => (
+                      <Col span={4} offset={1}>
+                        <MUICard sx={{ maxWidth: 375 }}>
+                        <Link to={`/product/details?id=${item.Id}`}>
+                            <CardMedia
+                              component="img"
+                              height="140"
+                              image={item.ImgUrl}
+                            />
+                          </Link>
+                          <CardContent>
+                            <Typography gutterBottom variant="h5" component="div">
+                            {item.Name}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              {item.Desc}
+                            </Typography>
+                          </CardContent>
+                          <CardActions disableSpacing>
+                            <IconButton aria-label="add to favorites">
+                              <FavoriteIcon />
+                            </IconButton>
+                            <IconButton aria-label="share">
+                              <ShareIcon />
+                            </IconButton>
+                          </CardActions>
+                        </MUICard>
+                      </Col>
+                    ))}
+              </div>
+              <div>
+                  {carouselTab3Data.map(item => (
+                          <Col span={4} offset={1}>
+                            <MUICard sx={{ maxWidth: 375 }}>
+                            <Link to={`/product/details?id=${item.Id}`}>
+                                <CardMedia
+                                  component="img"
+                                  height="140"
+                                  image={item.ImgUrl}
+                                />
+                              </Link>
+                              <CardContent>
+                                <Typography gutterBottom variant="h5" component="div">
+                                {item.Name}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                  {item.Desc}
+                                </Typography>
+                              </CardContent>
+                              <CardActions disableSpacing>
+                                <IconButton aria-label="add to favorites">
+                                  <FavoriteIcon />
+                                </IconButton>
+                                <IconButton aria-label="share">
+                                  <ShareIcon />
+                                </IconButton>
+                              </CardActions>
+                            </MUICard>
+                          </Col>
+                        ))}
+              </div>
+            </Carousel>
+        </div>}
         <Modal
           visible={visible}
           title="创建NFT合约"
