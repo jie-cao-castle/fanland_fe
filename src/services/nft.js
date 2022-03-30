@@ -1,4 +1,5 @@
 import request from '@/utils/request';
+import { configure } from 'enzyme';
 import { ethers, utils } from 'ethers';
 import {
     nftBytecode,
@@ -54,6 +55,8 @@ export async function setTokenPrice(params) {
 
     // The address from the above deployment example
     let contractAddress = params.contractAddress;
+    let price = params.price.toString();
+    let tokenId = params.tokenId;
     //let contractAddress = "0x147B8eb97fD247D06C4006D269c90C1908Fb5D54";
     // We connect to the Contract using a Provider, so we will only
     // have read-only access to the Contract
@@ -61,7 +64,7 @@ export async function setTokenPrice(params) {
     let contract = new ethers.Contract(contractAddress, nftAbi, signer);
 
     // Set a new Value, which returns the transaction
-    let tx = await contract.allowBuy(1, utils.parseEther('0.001'));
+    let tx = await contract.allowBuy(tokenId, utils.parseEther(price));
 
     // See: https://ropsten.etherscan.io/tx/0xaf0068dcf728afa5accd02172867627da4e6f946dfb8174a7be31f01b11d5364
     console.log(tx.hash);

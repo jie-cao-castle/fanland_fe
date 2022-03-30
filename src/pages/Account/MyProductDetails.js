@@ -88,6 +88,13 @@ class MyProductDetails extends Component {
       title: '价格',
       dataIndex: 'Price',
       key: 'price',
+      render: (text, record) => {
+          return (
+          <span>
+            {record.Price / record.PriceUnit}
+          </span>
+          );
+        }
     },
     {
       title: 'Token类型',
@@ -137,6 +144,13 @@ class MyProductDetails extends Component {
       title: '成交价格',
       dataIndex: 'Price',
       key: 'price',
+      render: (text, record) => {
+        return (
+        <span>
+          {record.Price / record.PriceUnit}
+        </span>
+        );
+      }
     },
     {
       title: 'Token类型',
@@ -312,6 +326,8 @@ class MyProductDetails extends Component {
           type: 'product/setPrice',
           payload: {
             contractAddress: productContracts[0].ContractAddress,
+            price: values.price,
+            tokenId: productContracts[0].NextTokenId,
           },
           callback: (response) => {
             if (response && response.hash) {
@@ -323,8 +339,8 @@ class MyProductDetails extends Component {
                   chainId :  chainId,
                   chainCode:"ETH",
                   contractId: productContracts[0].Id,
-                  price:values.price * 1000000,
-                  priceUnit: 6,
+                  price: values.price * 1000000000,
+                  priceUnit: 1000000000,
                   startTime: values.saleTimeRange[0].format(),
                   endTime:values.saleTimeRange[0].format(),
                   effectiveTime:values.saleTimeRange[0].format(),

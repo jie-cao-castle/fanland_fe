@@ -428,6 +428,13 @@ class ProductDetails extends Component {
       title: '价格',
       dataIndex: 'Price',
       key: 'price',
+      render: (text, record) => {
+          return (
+          <span>
+            {record.Price / record.PriceUnit}
+          </span>
+          );
+        }
     },
     {
       title: 'Token类型',
@@ -477,6 +484,13 @@ class ProductDetails extends Component {
       title: '成交价格',
       dataIndex: 'Price',
       key: 'price',
+      render: (text, record) => {
+        return (
+        <span>
+          {record.Price / record.PriceUnit}
+        </span>
+        );
+      }
     },
     {
       title: 'Token类型',

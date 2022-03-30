@@ -129,16 +129,18 @@ class Explore extends Component {
                           title={trendingProduct.Name}
                           subheader={trendingProduct.Creator.UserName}
                         />
-                        <CardMedia
-                          component="img"
-                          image={trendingProduct.ImgUrl}
-                          alt="Paella dish"
-                        />
-                        <CardContent>
-                          <Typography variant="body2" color="text.secondary">
-                            {trendingProduct.Desc}
-                          </Typography>
-                        </CardContent>
+                       <Link to={`/product/details?id=${trendingProduct.Id}`}>
+                          <CardMedia
+                            component="img"
+                            image={trendingProduct.ImgUrl}
+                            alt="Paella dish"
+                          />
+                          <CardContent>
+                            <Typography variant="body2" color="text.secondary">
+                              {trendingProduct.Desc}
+                            </Typography>
+                          </CardContent>
+                        </Link>
                         <CardActions disableSpacing>
                           <IconButton aria-label="add to favorites">
                             <FavoriteIcon />
