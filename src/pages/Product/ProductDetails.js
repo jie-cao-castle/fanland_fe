@@ -6,6 +6,7 @@ import { ChartCard, Field, MiniArea, MiniBar, MiniProgress } from '@/components/
 import CountDown from '@/components/CountDown';
 import { Paper } from '@mui/material';
 import numeral from 'numeral';
+import { BigNumber } from "bignumber.js";
 import NumberInfo from '@/components/NumberInfo';
 import {
   Card,
@@ -274,7 +275,7 @@ class ProductDetails extends Component {
               ProductId:productContracts[0].ProductId,
               nftKey:"1",
               price:1,
-              priceUnit:10000000,
+              priceUnit:1000000000,
               amount:1,
               status:0,
               chainId:productContracts[0].ChainId,
@@ -332,8 +333,8 @@ class ProductDetails extends Component {
                   chainId :  chainId,
                   chainCode:"ETH",
                   contractId: productContracts[0].Id,
-                  price:values.price * 1000000,
-                  priceUnit: 6,
+                  price:values.price * 1000000000,
+                  priceUnit: 1000000000,
                   startTime: values.saleTimeRange[0].format(),
                   endTime:values.saleTimeRange[0].format(),
                   effectiveTime:values.saleTimeRange[0].format(),
@@ -406,6 +407,11 @@ class ProductDetails extends Component {
     }
   };
 
+  handleBuySale(e, record) {
+    console.log(record);
+  }
+
+
   formatCountDown = time => {
     const hours = 60 * 60 * 1000;
     const minutes = 60 * 1000;
@@ -429,9 +435,10 @@ class ProductDetails extends Component {
       dataIndex: 'Price',
       key: 'price',
       render: (text, record) => {
+        console.log(record.PriceUnit)
           return (
           <span>
-            {record.Price / record.PriceUnit}
+            {BigNumber(record.Price).dividedBy(BigNumber(record.PriceUnit)).toFixed()}
           </span>
           );
         }
@@ -452,7 +459,7 @@ class ProductDetails extends Component {
       key: 'fromUser',
     },
     {
-      title: '状态',
+      title: '交易信息',
       key: 'status',
       dataIndex: 'Status',
       render: (text, record) => {
@@ -466,12 +473,45 @@ class ProductDetails extends Component {
           txt = "已截止"
         }
           return (
-          <Tag color={color} key={record.Id}>
+            <Tag color={color} key={record.Id}>
             {txt}
           </Tag>
           );
         }
-      }
+      },
+      {
+        key: 'action',
+        dataIndex: 'action',
+        render: (text, record) => {
+          let color = 'geekblue';
+          let txt = "提交中";
+          if (record.Status == 1) {
+            color = 'green';
+            txt = "售卖中"
+          } else if (record.Status == 2) {
+            color = 'volcano'
+            txt = "已截止"
+          }
+            return (
+            <span>
+            {record.Status == 1 &&
+              <span>
+                <Button type='primary' onChange={e => this.handleBuySale(e, record)}>
+                  购买
+                </Button>
+              </span>
+              }
+              {(record.Status == 2 || record.Status == 0)&&
+              <span>
+                <Button>
+                  查看
+                </Button>
+              </span>
+              }
+            </span>
+            );
+          }
+        }
   ];
 
   orderColumns = [
@@ -485,12 +525,13 @@ class ProductDetails extends Component {
       dataIndex: 'Price',
       key: 'price',
       render: (text, record) => {
-        return (
-        <span>
-          {record.Price / record.PriceUnit}
-        </span>
-        );
-      }
+        console.log(record.PriceUnit)
+          return (
+          <span>
+            {BigNumber(record.Price).dividedBy(BigNumber(record.PriceUnit)).toFixed()}
+          </span>
+          );
+        }
     },
     {
       title: 'Token类型',
