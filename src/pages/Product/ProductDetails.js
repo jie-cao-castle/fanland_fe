@@ -463,6 +463,13 @@ class ProductDetails extends Component {
       title: '售卖方',
       dataIndex: 'FromUserId',
       key: 'fromUser',
+      render: (text, record) => {
+        return (
+          <span>
+            <a href="#">{record.FromUserName}</a>      
+          </span>
+        );
+      }
     },
     {
       title: '交易信息',
@@ -531,7 +538,6 @@ class ProductDetails extends Component {
       dataIndex: 'Price',
       key: 'price',
       render: (text, record) => {
-        console.log(record.PriceUnit)
           return (
           <span>
             {BigNumber(record.Price).dividedBy(BigNumber(record.PriceUnit)).toFixed()}
@@ -576,7 +582,6 @@ class ProductDetails extends Component {
       }
   ];
   
-
   render() {
     const { productDetails, contract, accounts, chainId, productContracts, trendingProducts } = this.props;
     let productData = {};
