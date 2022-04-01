@@ -88,7 +88,7 @@ export async function buyNftwithPrice(params) {
     // All overrides are optional
     let overrides = {
         // The amount to send with the transaction (i.e. msg.value)
-        value: utils.parseEther('0.001'),
+        value: utils.parseEther(params.price),
     };
 
     // Set a new Value, which returns the transaction

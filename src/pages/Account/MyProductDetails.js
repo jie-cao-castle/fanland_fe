@@ -25,7 +25,6 @@ import styles from './MyProductDetails.less';
 import {
   chainCurrencyMap,
 } from '../../assets/constants.json'
-import Chip from '@mui/material/Chip';
 import { Paper } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -37,7 +36,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import HubIcon from '@mui/icons-material/Hub';
-
+import { BigNumber } from "bignumber.js";
 const { RangePicker } = DatePicker;
 const FormItem = Form.Item;
 const rankingListData = [];
@@ -91,7 +90,7 @@ class MyProductDetails extends Component {
       render: (text, record) => {
           return (
           <span>
-            {record.Price / record.PriceUnit}
+            {BigNumber(record.Price).dividedBy(BigNumber(record.PriceUnit)).toFixed()}
           </span>
           );
         }
@@ -105,14 +104,28 @@ class MyProductDetails extends Component {
       title: '截止日期',
       dataIndex: 'EndTime',
       key: 'endTime',
+      render: (text, record) => {
+          return (
+            <span>
+            {moment(record.EndTime).format('YYYY-MM-DD')}
+          </span>
+          );
+        }
     },
     {
       title: '售卖方',
       dataIndex: 'FromUserId',
       key: 'fromUser',
+      render: (text, record) => {
+        return (
+          <span>
+            <a href="#">{record.FromUserName}</a>      
+          </span>
+        );
+      }
     },
     {
-      title: '状态',
+      title: '交易信息',
       key: 'status',
       dataIndex: 'Status',
       render: (text, record) => {
@@ -126,12 +139,45 @@ class MyProductDetails extends Component {
           txt = "已截止"
         }
           return (
-          <Tag color={color} key={record.Id}>
+            <Tag color={color} key={record.Id}>
             {txt}
           </Tag>
           );
         }
-      }
+      },
+      {
+        key: 'action',
+        dataIndex: 'action',
+        render: (text, record) => {
+          let color = 'geekblue';
+          let txt = "提交中";
+          if (record.Status == 1) {
+            color = 'green';
+            txt = "售卖中"
+          } else if (record.Status == 2) {
+            color = 'volcano'
+            txt = "已截止"
+          }
+            return (
+            <span>
+            {record.Status == 1 &&
+              <span>
+                <Button type='primary' onChange={e => this.handleBuySale(e, record)}>
+                  购买
+                </Button>
+              </span>
+              }
+              {(record.Status == 2 || record.Status == 0)&&
+              <span>
+                <Button>
+                  查看
+                </Button>
+              </span>
+              }
+            </span>
+            );
+          }
+        }
   ];
 
   orderColumns = [
@@ -145,12 +191,12 @@ class MyProductDetails extends Component {
       dataIndex: 'Price',
       key: 'price',
       render: (text, record) => {
-        return (
-        <span>
-          {record.Price / record.PriceUnit}
-        </span>
-        );
-      }
+          return (
+          <span>
+            {BigNumber(record.Price).dividedBy(BigNumber(record.PriceUnit)).toFixed()}
+          </span>
+          );
+        }
     },
     {
       title: 'Token类型',
@@ -161,6 +207,25 @@ class MyProductDetails extends Component {
       title: '成交日期',
       dataIndex: 'UpdateTime',
       key: 'transactionTime',
+      render: (text, record) => {
+          return (
+            <span>
+            {moment(record.UpdateTime).format('YYYY-MM-DD')}
+          </span>
+          );
+        }
+    },
+    {
+      title: '购买者',
+      dataIndex: 'ToUserId',
+      key: 'toUser',
+      render: (text, record) => {
+        return (
+          <span>
+            <a href="#">{record.ToUserName}</a>      
+          </span>
+        );
+      }
     },
     {
       title: '状态',

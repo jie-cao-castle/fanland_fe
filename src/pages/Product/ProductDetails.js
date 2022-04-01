@@ -409,6 +409,35 @@ class ProductDetails extends Component {
 
   handleBuySale(e, record) {
     console.log(record);
+    e.preventDefault();
+    const { dispatch, productContracts, currentUser } = this.props;
+    const ethPrice = BigNumber(record.Price).dividedBy(BigNumber(record.PriceUnit)).toFixed();
+    dispatch({
+      type: 'product/buyNft',
+      payload: {
+        price: ethPrice,
+        contractAddress: productContracts[0].ContractAddress,
+      },
+      callback: (response) => {
+        if (response && response.hash) {
+          dispatch({
+            type: 'product/createNftOrder',
+            payload: {
+              transactionHash:response.hash,
+              ProductId:productContracts[0].ProductId,
+              nftKey:record.TokenId.ToString(),
+              price:record.Price,
+              priceUnit:1000000000,
+              amount:1,
+              status:0,
+              chainId:productContracts[0].ChainId,
+              chainCode:productContracts[0].ChainCode,
+              toUserId:currentUser.Id
+            }
+          });
+        }
+      }
+    });
   }
 
 
@@ -563,6 +592,18 @@ class ProductDetails extends Component {
         }
     },
     {
+      title: '购买者',
+      dataIndex: 'ToUserId',
+      key: 'toUser',
+      render: (text, record) => {
+        return (
+          <span>
+            <a href="#">{record.ToUserName}</a>      
+          </span>
+        );
+      }
+    },
+    {
       title: '状态',
       key: 'status',
       dataIndex: 'Status',
@@ -686,7 +727,7 @@ class ProductDetails extends Component {
                   </div>}
               </Col>
 
-              {productData && productData.Name &&<Col div style={{ marginLeft: '20px'}} span={7}>
+              {productData && productData.Name &&<Col div style={{ marginLeft: '20px'}} span={8}>
               <div>
                 <div className={styles.prodTtl}>{productData.Name}</div>
                   <Stack style={{width: '100%'}} direction="row" spacing={1.5}>
