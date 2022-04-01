@@ -435,7 +435,6 @@ class ProductDetails extends Component {
       dataIndex: 'Price',
       key: 'price',
       render: (text, record) => {
-        console.log(record.PriceUnit)
           return (
           <span>
             {BigNumber(record.Price).dividedBy(BigNumber(record.PriceUnit)).toFixed()}
@@ -452,6 +451,13 @@ class ProductDetails extends Component {
       title: '截止日期',
       dataIndex: 'EndTime',
       key: 'endTime',
+      render: (text, record) => {
+          return (
+            <span>
+            {moment(record.EndTime).format('YYYY-MM-DD')}
+          </span>
+          );
+        }
     },
     {
       title: '售卖方',
@@ -542,6 +548,13 @@ class ProductDetails extends Component {
       title: '成交日期',
       dataIndex: 'UpdateTime',
       key: 'transactionTime',
+      render: (text, record) => {
+          return (
+            <span>
+            {moment(record.UpdateTime).format('YYYY-MM-DD')}
+          </span>
+          );
+        }
     },
     {
       title: '状态',
