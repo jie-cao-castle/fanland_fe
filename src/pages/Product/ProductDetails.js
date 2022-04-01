@@ -777,7 +777,7 @@ class ProductDetails extends Component {
                       <Typography>售卖信息</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
-                        <Table columns={this.salsColumns} dataSource={productSales} />
+                        <Table locale={{ emptyText: '暂时没有售卖信息' }} columns={this.salsColumns} dataSource={productSales} />
                     </AccordionDetails>
                   </Accordion>
                   <Accordion style={{marginTop: '15px'}} expanded={true}>
@@ -789,7 +789,7 @@ class ProductDetails extends Component {
                         <Typography>交易记录</Typography>
                       </AccordionSummary>
                       <AccordionDetails>
-                      <Table columns={this.orderColumns} dataSource={nftOrders} />
+                      <Table locale={{ emptyText: '暂时没有交易信息' }} columns={this.orderColumns} dataSource={nftOrders} />
                       </AccordionDetails>
                   </Accordion>
             </Col>}

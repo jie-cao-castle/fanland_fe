@@ -589,7 +589,7 @@ class MyProductDetails extends Component {
                       <Typography>售卖信息</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
-                        <Table columns={this.salsColumns} dataSource={sales} />
+                        <Table locale={{ emptyText: '没数据' }} columns={this.salsColumns} dataSource={sales} />
                     </AccordionDetails>
                   </Accordion>
                   <Accordion style={{marginTop: '15px'}} expanded={true}>
