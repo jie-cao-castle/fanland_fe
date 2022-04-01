@@ -206,7 +206,7 @@ class ProductCreate extends Component {
         },
         wrapperCol: {
           xs: { span: 24 },
-          sm: { span: 14 },
+          sm: { span: 12 },
         },
       };
       const tailFormItemLayout = {
@@ -224,8 +224,8 @@ class ProductCreate extends Component {
       
       
     return (
-        <Card title="上传你的作品" bordered={false}>
-            <div style={{ marginTop: 16}}>
+        <Card title="上传你的作品作为数字藏品" bordered={false}>
+            <div style={{ marginTop: 16, marginLeft:'auto', marginRight:'auto', width:'50%'}}>
                 <Dragger {...props} fileList={this.state.fileList}>
                 <p className="ant-upload-drag-icon">
                     <Icon type="inbox" />
