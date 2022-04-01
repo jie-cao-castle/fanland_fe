@@ -116,7 +116,7 @@ class Explore extends Component {
                         <RadioButton value="b">数字藏品</RadioButton>
                         <RadioButton value="c">手办</RadioButton>
                         <RadioButton value="d">数字唱片</RadioButton>
-                        <RadioButton value="c">游戏卡装</RadioButton>
+                        <RadioButton value="e">游戏卡装</RadioButton>
                 </RadioGroup>
                 </div>
                  <Masonry style={{width:'70%', margin:'0 auto'}} columns={3} spacing={3}>
