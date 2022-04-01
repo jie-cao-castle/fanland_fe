@@ -7,12 +7,13 @@ import GridContent from '@/components/PageHeaderWrapper/GridContent';
 import styles from './Center.less';
 
 export default
-@connect(({ loading, user, project }) => ({
+@connect(({ loading, user, project, product }) => ({
   listLoading: loading.effects['list/fetch'],
   currentUser: user.currentUser,
   currentUserLoading: loading.effects['user/fetchCurrent'],
   project,
   projectLoading: loading.effects['project/fetchNotice'],
+  trendingProducts:product.trendingProducts,
 }))
 class Center extends PureComponent {
   state = {
@@ -26,28 +27,23 @@ class Center extends PureComponent {
     dispatch({
       type: 'user/fetchCurrent',
     });
+    
     dispatch({
-      type: 'list/fetch',
-      payload: {
-        count: 8,
-      },
-    });
-    dispatch({
-      type: 'project/fetchNotice',
+      type: 'product/fetchTrendingProducts',
     });
   }
 
   onTabChange = key => {
     const { match } = this.props;
     switch (key) {
-      case 'articles':
-        router.push(`${match.url}/articles`);
+      case 'assets':
+        router.push(`${match.url}/assets`);
         break;
-      case 'applications':
-        router.push(`${match.url}/applications`);
+      case 'collections':
+        router.push(`${match.url}/collections`);
         break;
-      case 'projects':
-        router.push(`${match.url}/projects`);
+      case 'circles':
+        router.push(`${match.url}/circles`);
         break;
       default:
         break;
@@ -80,6 +76,113 @@ class Center extends PureComponent {
     });
   };
 
+  tags = [
+    {
+      key:1,
+      label:"NFT达人"
+    },
+    {
+      key:2,
+      label:"游戏卡牌典藏家"
+    }
+  ]; 
+
+  projects = [
+    {
+      key:1,
+      label:"NFT达人"
+    },
+    {
+      key:2,
+      label:"游戏卡牌典藏家"
+    }
+  ]; 
+  
+  titles = [
+    'Alipay',
+    'Angular',
+    'Ant Design',
+    'Ant Design Pro',
+    'Bootstrap',
+    'React',
+    'Vue',
+    'Webpack',
+  ];
+  
+  avatars = [
+    'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png', // Alipay
+    'https://gw.alipayobjects.com/zos/rmsportal/zOsKZmFRdUtvpqCImOVY.png', // Angular
+    'https://gw.alipayobjects.com/zos/rmsportal/dURIMkkrRFpPgTuzkwnB.png', // Ant Design
+    'https://gw.alipayobjects.com/zos/rmsportal/sfjbOqnsXXJgNCjCzDBL.png', // Ant Design Pro
+    'https://gw.alipayobjects.com/zos/rmsportal/siCrBXXhmvTQGWPNLBow.png', // Bootstrap
+    'https://gw.alipayobjects.com/zos/rmsportal/kZzEzemZyKLKFsojXItE.png', // React
+    'https://gw.alipayobjects.com/zos/rmsportal/ComBAopevLwENQdKWiIn.png', // Vue
+    'https://gw.alipayobjects.com/zos/rmsportal/nxkuOJlFJuAUhzlMTCEe.png', // Webpack
+  ];
+  
+  projects = [
+    {
+      id: 'xxx1',
+      title:  this.titles[0],
+      logo: this.avatars[0],
+      description: '那是一种内在的东西，他们到达不了，也无法触及的',
+      updatedAt: new Date(),
+      member: '科学搬砖组',
+      href: '',
+      memberLink: '',
+    },
+    {
+      id: 'xxx2',
+      title: this.titles[1],
+      logo: this.avatars[1],
+      description: '希望是一个好东西，也许是最好的，好东西是不会消亡的',
+      updatedAt: new Date('2017-07-24'),
+      member: '全组都是吴彦祖',
+      href: '',
+      memberLink: '',
+    },
+    {
+      id: 'xxx3',
+      title: this.titles[2],
+      logo: this.avatars[2],
+      description: '城镇中有那么多的酒馆，她却偏偏走进了我的酒馆',
+      updatedAt: new Date(),
+      member: '中二少女团',
+      href: '',
+      memberLink: '',
+    },
+    {
+      id: 'xxx4',
+      title: this.titles[3],
+      logo: this.avatars[3],
+      description: '那时候我只会想自己想要什么，从不想自己拥有什么',
+      updatedAt: new Date('2017-07-23'),
+      member: '程序员日常',
+      href: '',
+      memberLink: '',
+    },
+    {
+      id: 'xxx5',
+      title: this.titles[4],
+      logo: this.avatars[4],
+      description: '凛冬将至',
+      updatedAt: new Date('2017-07-23'),
+      member: '高逼格设计天团',
+      href: '',
+      memberLink: '',
+    },
+    {
+      id: 'xxx6',
+      title: this.titles[5],
+      logo: this.avatars[5],
+      description: '生命就像一盒巧克力，结果往往出人意料',
+      updatedAt: new Date('2017-07-23'),
+      member: '骗你来学计算机',
+      href: '',
+      memberLink: '',
+    },
+  ];
+
   render() {
     const { newTags, inputVisible, inputValue } = this.state;
     const {
@@ -95,26 +198,26 @@ class Center extends PureComponent {
 
     const operationTabList = [
       {
-        key: 'articles',
+        key: 'assets',
         tab: (
           <span>
-            文章 <span style={{ fontSize: 14 }}>(8)</span>
+            作品 <span style={{ fontSize: 14 }}>(8)</span>
           </span>
         ),
       },
       {
-        key: 'applications',
+        key: 'collections',
         tab: (
           <span>
-            应用 <span style={{ fontSize: 14 }}>(8)</span>
+            典藏 <span style={{ fontSize: 14 }}>(8)</span>
           </span>
         ),
       },
       {
-        key: 'projects',
+        key: 'circles',
         tab: (
           <span>
-            项目 <span style={{ fontSize: 14 }}>(8)</span>
+            圈子 <span style={{ fontSize: 14 }}>(8)</span>
           </span>
         ),
       },
@@ -128,9 +231,9 @@ class Center extends PureComponent {
               {currentUser && Object.keys(currentUser).length ? (
                 <div>
                   <div className={styles.avatarHolder}>
-                    <img alt="" src={currentUser.avatar} />
-                    <div className={styles.name}>{currentUser.name}</div>
-                    <div>{currentUser.signature}</div>
+                    <img alt="" src={currentUser.AvatarUrl} />
+                    <div className={styles.name}>{currentUser.UserName}</div>
+                    <div>{currentUser.Desc}</div>
                   </div>
                   <div className={styles.detail}>
                     <p>
@@ -141,16 +244,11 @@ class Center extends PureComponent {
                       <i className={styles.group} />
                       {currentUser.group}
                     </p>
-                    <p>
-                      <i className={styles.address} />
-                      {currentUser.geographic.province.label}
-                      {currentUser.geographic.city.label}
-                    </p>
                   </div>
                   <Divider dashed />
                   <div className={styles.tags}>
                     <div className={styles.tagsTitle}>标签</div>
-                    {currentUser.tags.concat(newTags).map(item => (
+                    {this.tags.concat(newTags).map(item => (
                       <Tag key={item.key}>{item.label}</Tag>
                     ))}
                     {inputVisible && (
@@ -176,10 +274,9 @@ class Center extends PureComponent {
                   </div>
                   <Divider style={{ marginTop: 16 }} dashed />
                   <div className={styles.team}>
-                    <div className={styles.teamTitle}>团队</div>
-                    <Spin spinning={projectLoading}>
+                    <div className={styles.teamTitle}>圈子</div>
                       <Row gutter={36}>
-                        {notice.map(item => (
+                        {this.projects.map(item => (
                           <Col key={item.id} lg={24} xl={12}>
                             <Link to={item.href}>
                               <Avatar size="small" src={item.logo} />
@@ -188,7 +285,6 @@ class Center extends PureComponent {
                           </Col>
                         ))}
                       </Row>
-                    </Spin>
                   </div>
                 </div>
               ) : (

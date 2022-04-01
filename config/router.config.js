@@ -231,19 +231,19 @@ export default [
             routes: [
               {
                 path: '/account/center',
-                redirect: '/account/center/articles',
+                redirect: '/account/center/assets',
               },
               {
-                path: '/account/center/articles',
-                component: './Account/Center/Articles',
+                path: '/account/center/assets',
+                component: './Account/Center/Assets',
               },
               {
-                path: '/account/center/applications',
-                component: './Account/Center/Applications',
+                path: '/account/center/collections',
+                component: './Account/Center/Collections',
               },
               {
-                path: '/account/center/projects',
-                component: './Account/Center/Projects',
+                path: '/account/center/circles',
+                component: './Account/Center/Circles',
               },
 
             ],

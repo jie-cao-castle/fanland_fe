@@ -100,8 +100,7 @@ class Explore extends Component {
     if (topProduct) {
       topProdUrl = ("/product/details/?id=" + topProduct.Id);
     }
-
-
+    
     return (
       <div>
         {trendingProducts && trendingProducts.length >= 0 &&
