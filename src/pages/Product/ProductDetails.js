@@ -805,13 +805,13 @@ class ProductDetails extends Component {
                 {carouselTab1Data.map(item => (
                   <Col span={4} offset={1}>
                     <MUICard sx={{ maxWidth: 375 }}>
-                    <Link to={`/product/details?id=${item.Id}`}>
+                    <a href={`/product/details?id=${item.Id}`}>
                         <CardMedia
                           component="img"
                           height="140"
                           image={item.ImgUrl}
                         />
-                      </Link>
+                      </a>
                       <CardContent>
                         <Typography gutterBottom variant="h5" component="div">
                         {item.Name}
@@ -837,13 +837,13 @@ class ProductDetails extends Component {
                   {carouselTab2Data.map(item => (
                       <Col span={4} offset={1}>
                         <MUICard sx={{ maxWidth: 375 }}>
-                        <Link to={`/product/details?id=${item.Id}`}>
+                        <a href={`/product/details?id=${item.Id}`}>
                             <CardMedia
                               component="img"
                               height="140"
                               image={item.ImgUrl}
                             />
-                          </Link>
+                          </a>
                           <CardContent>
                             <Typography gutterBottom variant="h5" component="div">
                             {item.Name}
@@ -868,13 +868,13 @@ class ProductDetails extends Component {
                   {carouselTab3Data.map(item => (
                           <Col span={4} offset={1}>
                             <MUICard sx={{ maxWidth: 375 }}>
-                            <Link to={`/product/details?id=${item.Id}`}>
+                            <a href={`/product/details?id=${item.Id}`}>
                                 <CardMedia
                                   component="img"
                                   height="140"
                                   image={item.ImgUrl}
                                 />
-                              </Link>
+                              </a>
                               <CardContent>
                                 <Typography gutterBottom variant="h5" component="div">
                                 {item.Name}
