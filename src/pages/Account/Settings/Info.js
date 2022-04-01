@@ -17,19 +17,9 @@ class Info extends Component {
     super(props);
     const { match, location } = props;
     const menuMap = {
-      base: <FormattedMessage id="app.settings.menuMap.basic" defaultMessage="Basic Settings" />,
-      security: (
-        <FormattedMessage id="app.settings.menuMap.security" defaultMessage="Security Settings" />
-      ),
-      binding: (
-        <FormattedMessage id="app.settings.menuMap.binding" defaultMessage="Account Binding" />
-      ),
-      notification: (
-        <FormattedMessage
-          id="app.settings.menuMap.notification"
-          defaultMessage="New Message Notification"
-        />
-      ),
+      base: "账户设置",
+      security: "登录设置",
+      notification: "消息",
     };
     const key = location.pathname.replace(`${match.path}/`, '');
     this.state = {
@@ -96,7 +86,7 @@ class Info extends Component {
 
   render() {
     const { children, currentUser } = this.props;
-    if (!currentUser.userid) {
+    if (!currentUser.Id) {
       return '';
     }
     const { mode, selectKey } = this.state;
