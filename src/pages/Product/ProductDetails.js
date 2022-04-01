@@ -705,8 +705,8 @@ class ProductDetails extends Component {
                       <MoreVertIcon />
                     </IconButton>
                   }
-                  title="Shrimp and Chorizo Paella"
-                  subheader="September 14, 2016"
+                  title={productData.Creator.UserName}
+                  subheader={moment(productData).format('YYYY-MM-DD')}
                 />
                 <CardMedia
                   component="img"
@@ -769,7 +769,7 @@ class ProductDetails extends Component {
               </MUICard>
                 }
                   {productData && productData.Desc &&<div>
-                  <Accordion>
+                  <Accordion style={{marginTop:'10px'}}>
                     <AccordionSummary
                       expandIcon={<ExpandMoreIcon />}
                       aria-controls="panel1a-content"
