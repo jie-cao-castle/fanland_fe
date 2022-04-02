@@ -18,7 +18,6 @@ export default
 class Center extends PureComponent {
   render() {
     const { trendingProducts } = this.props;
-    console.log(trendingProducts)
     return (
       <List
         className={stylesProjects.coverCardList}
@@ -27,11 +26,11 @@ class Center extends PureComponent {
         dataSource={trendingProducts}
         renderItem={item => (
           <List.Item>
-            <MUICard sx={{ maxWidth: 375 }}>
+            <MUICard sx={{ maxWidth: 450 }}>
               <a href={`/product/details?id=${item.Id}`}>
                 <CardMedia
                   component="img"
-                  height="140"
+                  height="200"
                   image={item.ImgUrl}
                 />
               </a>

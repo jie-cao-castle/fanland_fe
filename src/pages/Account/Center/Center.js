@@ -194,6 +194,7 @@ class Center extends PureComponent {
       match,
       location,
       children,
+      trendingProducts,
     } = this.props;
 
     const operationTabList = [
@@ -201,7 +202,7 @@ class Center extends PureComponent {
         key: 'assets',
         tab: (
           <span>
-            作品 <span style={{ fontSize: 14 }}>(8)</span>
+            作品 {trendingProducts && trendingProducts.length && <span style={{ fontSize: 14 }}>{trendingProducts.length}</span>}
           </span>
         ),
       },
@@ -209,7 +210,7 @@ class Center extends PureComponent {
         key: 'collections',
         tab: (
           <span>
-            典藏 <span style={{ fontSize: 14 }}>(8)</span>
+            典藏 {trendingProducts && trendingProducts.length && <span style={{ fontSize: 14 }}>{trendingProducts.length}</span>}
           </span>
         ),
       },
@@ -217,7 +218,7 @@ class Center extends PureComponent {
         key: 'circles',
         tab: (
           <span>
-            圈子 <span style={{ fontSize: 14 }}>(8)</span>
+            圈子 {trendingProducts && trendingProducts.length && <span style={{ fontSize: 14 }}>{8}</span>}
           </span>
         ),
       },

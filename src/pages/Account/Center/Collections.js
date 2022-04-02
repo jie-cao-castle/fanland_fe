@@ -28,7 +28,7 @@ class Center extends PureComponent {
       products = trendingProducts;
     }
     return (
-        <Masonry style={{margin:'0 auto'}} columns={3} spacing={3}>
+        <Masonry style={{margin:'0 auto'}} columns={4} spacing={3}>
         {products.map((trendingProduct, index) => (
         <MUICard>
               <CardHeader
