@@ -22,6 +22,7 @@ import {
   InputNumber,
   Table,
   Tabs,
+  Divider,
 } from 'antd';
 const { Panel } = Collapse;
 import moment from 'moment';
@@ -710,15 +711,27 @@ class ProductDetails extends Component {
                 />
                 <CardMedia
                   component="img"
-                  height="194"
                   image={productData.ImgUrl}
                   alt="Paella dish"
                 />
                 <CardContent>
                   <Typography variant="body2" color="text.secondary">
-                    This impressive paella is a perfect party dish and a fun meal to cook
-                    together with your guests. Add 1 cup of frozen peas along with the mussels,
-                    if you like.
+                  <div>
+                    <Tag color="#f50">每日精选</Tag>
+                    <Tag color="#2db7f5">周热门</Tag>
+                    <Tag color="#87d068">经典永流传系列</Tag>
+                    <Tag color="#108ee9">永远买不到</Tag>
+                  </div>
+                  <Divider dashed style={{ margin: '16px 0' }} />
+                  <div>
+                    <Tag color="pink">中国风</Tag>
+                    <Tag color="red">伊吹五月</Tag>
+                    <Tag color="orange">美爆了</Tag>
+                    <Tag color="green">天涯十美</Tag>
+                    <Tag color="cyan">舞动中国</Tag>
+                    <Tag color="blue">国风</Tag>
+                    <Tag color="purple">水墨风</Tag>
+                  </div>
                   </Typography>
                 </CardContent>
                 <CardActions disableSpacing>
