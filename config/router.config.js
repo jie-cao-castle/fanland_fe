@@ -63,7 +63,7 @@ export default [
           {
             path: '/product/details',
             name: 'productDetails',
-            component: './Product/productDetails',
+            component: './Product/ProductDetails',
           },
         ],
       },
