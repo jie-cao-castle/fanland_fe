@@ -202,7 +202,8 @@ class ProductDetails extends Component {
                           type: 'product/updateNftOrders',
                           payload: {
                             id: orders[i].Id,
-                            status: response.status
+                            status: response.status,
+                            saleId: orders[i].SaleId
                           },
                           callback: (response) => {
                             console.log("updateNftOrder", response)
@@ -295,7 +296,8 @@ class ProductDetails extends Component {
               status:0,
               chainId:topSale.ChainId,
               chainCode:topSale.ChainCode,
-              toUserId:currentUser.Id
+              toUserId:currentUser.Id,
+              saleId:topSale.Id
             }
           });
         }
@@ -430,7 +432,8 @@ class ProductDetails extends Component {
               status:0,
               chainId:productContracts[0].ChainId,
               chainCode:productContracts[0].ChainCode,
-              toUserId:currentUser.Id
+              toUserId:currentUser.Id,
+              saleId:record.Id
             }
           });
         }
@@ -511,6 +514,9 @@ class ProductDetails extends Component {
           color = 'green';
           txt = "售卖中"
         } else if (record.Status == 2) {
+          color = 'volcano'
+          txt = "已完成"
+        } else if (record.Status == 3) {
           color = 'volcano'
           txt = "已截止"
         }
