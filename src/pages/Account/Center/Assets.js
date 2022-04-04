@@ -27,7 +27,7 @@ class Center extends PureComponent {
         renderItem={item => (
           <List.Item>
             <MUICard sx={{ maxWidth: 450 }}>
-              <a href={`/product/details?id=${item.Id}`}>
+              <a href={`/account/product/details?id=${item.Id}`}>
                 <CardMedia
                   component="img"
                   height="200"

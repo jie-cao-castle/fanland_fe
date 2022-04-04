@@ -49,7 +49,8 @@ for (let i = 0; i < 7; i += 1) {
 
 @connect(({ eth, product, user }) => ({
   currentUser: user.currentUser,
-  productDetails: product.productDetails,
+  productData: product.productData,
+  sales: product.sales,
   accounts: eth.accounts,
   contract: eth.contract,
   chainId: eth.chainId,
@@ -256,6 +257,27 @@ class MyProductDetails extends Component {
         payload: {
           id: parseInt(id, 10),
         },
+        callback: (response) => {
+          console.log("product/fetch", response)
+          if (response.success) {
+            const salesData = response.result.sales;
+            console.log("product/fetch salesData", salesData);
+            if (salesData && salesData.length > 0) {
+              for (let i = 0; i < salesData.length; i++) {
+                const sale = salesData[i];
+                if (sale.Status == 0) {
+                  dispatch({
+                    type: 'product/updateSale',
+                    payload: {
+                      id: sale.Id,
+                      status: 1
+                    },
+                  });
+                }
+              }
+            }
+          }
+        }
       });
       dispatch({
         type: 'product/fetchProductContracts',
@@ -381,7 +403,7 @@ class MyProductDetails extends Component {
   };
 
   handleSale = (e) => {
-    const { dispatch, productDetails,chainId, productContracts, currentUser } = this.props;
+    const { dispatch, productData, chainId, productContracts, currentUser } = this.props;
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
@@ -400,14 +422,14 @@ class MyProductDetails extends Component {
               dispatch({
                 type: 'product/createSale',
                 payload: {
-                  productId: productDetails.product.Id,
+                  productId: productData.product.Id,
                   chainId :  chainId,
                   chainCode:"ETH",
                   contractId: productContracts[0].Id,
                   price: values.price * 1000000000,
                   priceUnit: 1000000000,
                   startTime: values.saleTimeRange[0].format(),
-                  endTime:values.saleTimeRange[0].format(),
+                  endTime:values.saleTimeRange[1].format(),
                   effectiveTime:values.saleTimeRange[0].format(),
                   status: 0,
                   fromUserId: currentUser.Id
@@ -481,15 +503,9 @@ class MyProductDetails extends Component {
   
 
   render() {
-    const { productDetails, contract, accounts, chainId, productContracts } = this.props;
+    const { productData, sales, contract, accounts, chainId, productContracts } = this.props;
     console.log(chainId)
 
-    let productData = {};
-    let sales = [];
-    if (productDetails) {
-      productData = productDetails.product;
-      sales = productDetails.sales;
-    }    
     console.log(sales);
 
     const hasAccounts = accounts && accounts.length > 0;
@@ -500,6 +516,7 @@ class MyProductDetails extends Component {
       form: { getFieldDecorator },
     } = this.props;
     const { visible, loading, nftOrders, productSales } = this.state;
+    
     return (
       
         <div>
@@ -652,7 +669,7 @@ class MyProductDetails extends Component {
                         ],
                         })(<InputNumber 
                                 disabled={!salesEnabled}
-                                min={1} 
+                                min={0.01} 
                                 max={1000} 
                                 step={0.00001} 
                                 defaultValue={0} 
@@ -663,7 +680,7 @@ class MyProductDetails extends Component {
                   {getFieldDecorator('chainId', { initialValue: chainId })}
                   <Form.Item label="Duration">
                       {getFieldDecorator('saleTimeRange', { initialValue: [
-                        moment('2015/01/01', 'YYYY/MM/DD'), moment('2015/01/01', 'YYYY/MM/DD')
+                        moment(), moment().add(7, 'days')
                       ] })
                       (<RangePicker
                       disabled={!salesEnabled}

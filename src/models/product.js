@@ -9,7 +9,8 @@ import {
   addNftOrder,
   updateOrders,
   createProductContract,
-  queryTrendingProducts
+  queryTrendingProducts,
+  updateSale,
 } from '@/services/product';
 
 import { connectContract, setTokenPrice, buyNftwithPrice, getTransaction } from '@/services/nft';
@@ -23,14 +24,19 @@ export default {
     trendingProducts: [],
     productDetails: {},
     sale: {},
+    sales:[],
+    productData:{},
     productContracts: [],
     ethContract: undefined,
     nftOrders: [],
   },
 
   effects: {
-    *fetch({ payload }, { call, put }) {
+    *fetch({ payload, callback }, { call, put }) {
       const response = yield call(getProduct, payload);
+      if (callback && typeof callback === 'function') {
+        callback(response)
+      }
       yield put({
         type: 'saveDetails',
         payload: response,
@@ -58,7 +64,19 @@ export default {
       }
       if (response && response.success) {
         yield put({
-          type: 'saveSale',
+          type: 'addSaveSale',
+          payload: response,
+        });
+      }
+    },
+    *updateSale({ payload, callback }, { call, put }) {
+      const response = yield call(updateSale, payload);
+      if (callback && typeof callback === 'function') {
+        callback(response)
+      }
+      if (response && response.success) {
+        yield put({
+          type: 'updateSaveSale',
           payload: response,
         });
       }
@@ -102,6 +120,7 @@ export default {
 
     *setPrice({ payload, callback }, { call, put }) {
       try {
+        console.log(payload)
         const response = yield call(setTokenPrice, payload);
         console.log(response)
         if (callback && typeof callback === 'function') {
@@ -195,6 +214,8 @@ export default {
       return {
         ...state,
         productDetails: action.payload.result,
+        productData: action.payload.result.product,
+        sales: action.payload.result.sales,
       };
     },
     saveTopProduct(state, action) {
@@ -222,11 +243,41 @@ export default {
         productContracts: [action.payload.result]
       };
     },
+    addSaveSale(state, action) {
+      const { sales } = state;
+      const newData = sales.map(item => ({ ...item }));
+      if (action.payload && action.payload.success) {
+        const newSale = action.payload.result;
+        newData.push(newSale);
+      }
+
+      return {
+        ...state,
+        sales:newData
+      };
+    },
+    updateSaveSale(state, action) {
+      const { sales } = state;
+      const newData = sales.map(item => ({ ...item }));
+      if (action.payload && action.payload.success) {
+        const newSale = action.payload.result;
+        console.log("newSale", newSale);
+        for (let i = 0 ; i < newData.length; i++){
+          if (newData[i].Id == newSale.Id) {
+            newData[i].Status = newSale.Status;
+          }
+        }
+      }
+      return {
+        ...state,
+        sales:newData
+      };
+    },
+  
     saveSale(state, action) {
       console.log("saveSale", state);
       return {
         ...state,
-
         sale: action.payload.result
       };
     },
