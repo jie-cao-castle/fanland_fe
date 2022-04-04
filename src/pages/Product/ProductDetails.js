@@ -85,6 +85,7 @@ for (let i = 0; i < 7; i += 1) {
   ethContract: product.ethContract,
   trendingProducts:product.trendingProducts,
   usdPrice: eth.usdPrice,
+  nftOrders: product.nftOrders,
 }))
 @Form.create()
 class ProductDetails extends Component {
@@ -92,7 +93,6 @@ class ProductDetails extends Component {
         imageUrl:{},
         loading: false,
         visible: false,
-        nftOrders: [],
         expanded:false,
    };
   constructor(props) {
@@ -215,8 +215,6 @@ class ProductDetails extends Component {
                 });
               }
             }
-
-            this.setState({ nftOrders: orders });
           }
 
         }
@@ -425,9 +423,9 @@ class ProductDetails extends Component {
             payload: {
               transactionHash:response.hash,
               ProductId:productContracts[0].ProductId,
-              nftKey:record.TokenId.ToString(),
+              nftKey:record.TokenId.toString(),
               price:record.Price,
-              priceUnit:1000000000,
+              priceUnit:record.PriceUnit,
               amount:1,
               status:0,
               chainId:productContracts[0].ChainId,
@@ -540,7 +538,7 @@ class ProductDetails extends Component {
             <span>
             {record.Status == 1 &&
               <span>
-                <Button type='primary' onChange={e => this.handleBuySale(e, record)}>
+                <Button type='primary' onClick={e => this.handleBuySale(e, record)}>
                   购买
                 </Button>
               </span>
@@ -626,14 +624,14 @@ class ProductDetails extends Component {
   ];
   
   render() {
-    const { productData, sales, contract, accounts, chainId, productContracts, trendingProducts, usdPrice } = this.props;
+    const { productData, sales, contract, accounts, chainId, productContracts, trendingProducts, usdPrice, nftOrders } = this.props;
     const hasAccounts = accounts && accounts.length > 0;
     const hasContracts = productContracts && productContracts.length > 0;
     const salesEnabled = hasAccounts && hasContracts;
     const {
       form: { getFieldDecorator },
     } = this.props;
-    const { visible, loading, nftOrders, expanded } = this.state;
+    const { visible, loading, expanded } = this.state;
 
     
     let carouselTab1Data = [];

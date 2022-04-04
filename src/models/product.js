@@ -172,7 +172,7 @@ export default {
     *createNftOrder({ payload, callback }, { call, put }) {
       const response = yield call(addNftOrder, payload);
       yield put({
-        type: 'saveNftOrder',
+        type: 'saveCreatedNftOrder',
         payload: response,
       });
     },
@@ -246,10 +246,10 @@ export default {
     },
     addSaveSale(state, action) {
       const { sales } = state;
-      const newData = sales.map(item => ({ ...item }));
+      let newData = sales.map(item => ({ ...item }));
       if (action.payload && action.payload.success) {
         const newSale = action.payload.result;
-        newData.push(newSale);
+        newData = [newSale, ...newData];
       }
 
       return {
@@ -288,8 +288,19 @@ export default {
         ethContract: action.payload.result
       };
     },
+    saveCreatedNftOrder(state, action) {
+      const { nftOrders } = state;
+      let newData = nftOrders.map(item => ({ ...item }));
+      if (action.payload && action.payload.success) {
+        const newOrder = action.payload.result;
+        newData = [newOrder, ...newData];
+      }
+      return {
+        ...state,
+        nftOrders: newData
+      };
+    },
     saveNftOrder(state, action) {
-      console.log("saveNftOrder", state);
       return {
         ...state,
         nftOrders: action.payload.result
