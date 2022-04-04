@@ -76,13 +76,15 @@ for (let i = 0; i < 7; i += 1) {
 
 @connect(({ eth, product, user }) => ({
   currentUser: user.currentUser,
-  productDetails: product.productDetails,
+  productData: product.productData,
+  sales: product.sales,
   accounts: eth.accounts,
   contract: eth.contract,
   chainId: eth.chainId,
   productContracts: product.productContracts,
   ethContract: product.ethContract,
   trendingProducts:product.trendingProducts,
+  usdPrice: eth.usdPrice,
 }))
 @Form.create()
 class ProductDetails extends Component {
@@ -271,13 +273,14 @@ class ProductDetails extends Component {
     });
   };
 
-  handleBuy = (e) => {
-    e.preventDefault();
-    const { dispatch, productContracts } = this.props;
+  handleBuy = (topSale) => {
+    const { dispatch, productContracts, currentUser} = this.props;
+    const ethPrice = BigNumber(topSale.Price).dividedBy(BigNumber(topSale.PriceUnit)).toFixed();
     dispatch({
       type: 'product/buyNft',
       payload: {
-        price: 0.05,
+        tokenId: topSale.TokenId,
+        price: ethPrice,
         contractAddress: productContracts[0].ContractAddress,
       },
       callback: (response) => {
@@ -286,41 +289,18 @@ class ProductDetails extends Component {
             type: 'product/createNftOrder',
             payload: {
               transactionHash:response.hash,
-              ProductId:productContracts[0].ProductId,
-              nftKey:"1",
-              price:1,
-              priceUnit:1000000000,
+              ProductId:topSale.ProductId,
+              nftKey:topSale.TokenId.toString(),
+              price:topSale.Price,
+              priceUnit:topSale.PriceUnit,
               amount:1,
               status:0,
-              chainId:productContracts[0].ChainId,
-              chainCode:productContracts[0].ChainCode
+              chainId:topSale.ChainId,
+              chainCode:topSale.ChainCode,
+              toUserId:currentUser.Id
             }
           });
         }
-      }
-    });
-  }
-
-  handleGetTransaction = (e) => {
-    e.preventDefault();
-    const { dispatch, productContracts } = this.props;
-    dispatch({
-      type: 'product/getTrans',
-      payload: {
-        transactionHash: 'aaa'
-      },
-      callback: (response) => {
-        /*
-        if (response.transactionHash) {
-          dispatch({
-            type: 'product/createNftOrder',
-            payload: {
-              ...productData,
-              transactionHash
-            }
-          });
-        }
-        */
       }
     });
   }
@@ -331,7 +311,7 @@ class ProductDetails extends Component {
   }
 
   handleSale = (e) => {
-    const { dispatch, productDetails,chainId, productContracts, currentUser } = this.props;
+    const { dispatch, productData,chainId, productContracts, currentUser } = this.props;
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
@@ -348,7 +328,7 @@ class ProductDetails extends Component {
               dispatch({
                 type: 'product/createSale',
                 payload: {
-                  productId: productDetails.product.Id,
+                  productId: productData.Id,
                   chainId :  chainId,
                   chainCode:"ETH",
                   contractId: productContracts[0].Id,
@@ -434,6 +414,7 @@ class ProductDetails extends Component {
     dispatch({
       type: 'product/buyNft',
       payload: {
+        tokenId:record.TokenId,
         price: ethPrice,
         contractAddress: productContracts[0].ContractAddress,
       },
@@ -461,15 +442,17 @@ class ProductDetails extends Component {
 
 
   formatCountDown = time => {
+    const days = 24 * 60 * 60 * 1000;
     const hours = 60 * 60 * 1000;
     const minutes = 60 * 1000;
-
-    const h = Math.floor(time / hours);
-    const m = Math.floor((time - h * hours) / minutes);
-    const s = Math.floor((time - h * hours - m * minutes) / 1000);
+    const d = Math.floor(time / days);
+    const h = Math.floor((time - d * days) / hours);
+    const m = Math.floor((time - d * days - h * hours) / minutes);
+    const s = Math.floor((time - d * days - h * hours - m * minutes) / 1000);
     return (
       <span>
-        {this.fixedZero(h)+`天 `}:{this.fixedZero(m)+`分`}:{this.fixedZero(s)+`秒`}
+          {d !=0 ? d +`天`+ this.fixedZero(h)+`小时` + this.fixedZero(m)+`分` + this.fixedZero(s)+`秒` 
+            : this.fixedZero(h)+`小时` + this.fixedZero(m)+`分` + this.fixedZero(s)+`秒`}
       </span>
     );
   };
@@ -643,25 +626,15 @@ class ProductDetails extends Component {
   ];
   
   render() {
-    const { productDetails, contract, accounts, chainId, productContracts, trendingProducts } = this.props;
-    let productData = {};
-    if (productDetails) {
-      productData = productDetails.product;
-    }
-    let productSales = [];
-    if (productDetails && productDetails.sales) {
-      productSales = productDetails.sales;
-    }
-
+    const { productData, sales, contract, accounts, chainId, productContracts, trendingProducts, usdPrice } = this.props;
     const hasAccounts = accounts && accounts.length > 0;
     const hasContracts = productContracts && productContracts.length > 0;
     const salesEnabled = hasAccounts && hasContracts;
-
     const {
       form: { getFieldDecorator },
     } = this.props;
     const { visible, loading, nftOrders, expanded } = this.state;
-    console.log(nftOrders);
+
     
     let carouselTab1Data = [];
     let carouselTab2Data = [];
@@ -680,15 +653,24 @@ class ProductDetails extends Component {
 
 
     let visitData = [];
-    const beginDay = new Date().getTime();
-    for (let i = 0; i < 20; i += 1) {
-      visitData.push({
-        x: moment(new Date(beginDay + 1000 * 60 * 60 * 24 * i)).format('YYYY-MM-DD'),
-        y: Math.floor(Math.random() * 100) + 10,
-      });
-    }
-    const targetTime = new Date().getTime() + 3900000;
+    if (sales && sales.length > 0) {
+      for (let i = sales.length - 1; i >=0; i -= 1) {
+        visitData.push({
+          x: moment(sales[i].EndTime).format('YYYY-MM-DD'),
+          y: BigNumber(sales[i].Price).dividedBy(BigNumber(sales[i].PriceUnit)),
+        });
+      }
+   }
 
+   let topSalePriceInfo = undefined;
+   let topSale = undefined;
+   let targetTime = undefined;
+   if (sales && sales.length > 0) {
+      topSalePriceInfo  = BigNumber(sales[0].Price).dividedBy(BigNumber(sales[0].PriceUnit)) * usdPrice;
+      targetTime = moment(sales[0].EndTime).valueOf();
+      topSale = sales[0];
+      console.log(sales[0]);
+    }
     return (
         <div>
         <Row>
@@ -845,7 +827,7 @@ class ProductDetails extends Component {
                   </Stack>
               </div>
 
-              {productSales && productSales.length > 0 && <Accordion expanded={true}>
+              {sales && sales.length > 0 && <Accordion expanded={true}>
                     <AccordionSummary
                       expandIcon={<ExpandMoreIcon />}
                       aria-controls="panel3a-content"
@@ -855,13 +837,13 @@ class ProductDetails extends Component {
                     </AccordionSummary>
                     <AccordionDetails>
                       <CountDown style={{ fontSize: 30 }} target={targetTime} format={this.formatCountDown}/>
-                      <Button style={ {marginLeft: '35px', marginTop: '-10px' }} type="primary" icon="tag" size='large' onClick={this.handleBuy}>下单</Button>
-                      <NumberInfo
+                      <Button style={ {marginLeft: '35px', marginTop: '-10px' }} type="primary" icon="tag" size='large' onClick={() => this.handleBuy(topSale)}>下单</Button>
+                      {usdPrice && <NumberInfo
                         subTitle={<span>历史价格</span>}
-                        total={numeral(12321).format('0,0')}
+                        total={numeral(sales[0].Price*12321).format('0,0')}
                         status="up"
                         subTotal={17.1}
-                      />
+                      />}
                       <MiniArea line height={45} data={visitData} />
                     </AccordionDetails>
                   </Accordion>}
@@ -875,7 +857,7 @@ class ProductDetails extends Component {
                       <Typography>售卖信息</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
-                        <Table locale={{ emptyText: '暂时没有售卖信息' }} columns={this.salsColumns} dataSource={productSales} />
+                        <Table locale={{ emptyText: '暂时没有售卖信息' }} columns={this.salsColumns} dataSource={sales} />
                     </AccordionDetails>
                   </Accordion>
                   <Accordion style={{marginTop: '15px'}} expanded={true}>

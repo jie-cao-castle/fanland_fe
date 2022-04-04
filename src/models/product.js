@@ -132,6 +132,7 @@ export default {
     },
     *buyNft({ payload, callback }, { call, put }) {
       try {
+        console.log(payload);
         const response = yield call(buyNftwithPrice, payload);
         console.log(response)
         if (callback && typeof callback === 'function') {

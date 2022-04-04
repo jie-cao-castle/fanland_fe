@@ -92,7 +92,7 @@ export async function buyNftwithPrice(params) {
     };
 
     // Set a new Value, which returns the transaction
-    let tx = await contract.buy(1, overrides);
+    let tx = await contract.buy(params.tokenId, overrides);
 
     // See: https://ropsten.etherscan.io/tx/0xaf0068dcf728afa5accd02172867627da4e6f946dfb8174a7be31f01b11d5364
     console.log(tx.hash);
@@ -107,4 +107,13 @@ export async function getTransaction(params) {
     console.log(transaction)
 
     return transaction.wait();
+}
+
+export async function getETHtoUSDprice(params) {
+    return request('https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD', {
+        method: 'GET',
+        body: {
+          ...params,
+        },
+      });
 }

@@ -1,5 +1,5 @@
 import { queryAccount } from '@/services/user';
-import { deployContract, connectContract, queryChainId } from '@/services/nft';
+import { deployContract, connectContract, queryChainId, getETHtoUSDprice } from '@/services/nft';
 import MetaMaskOnboarding from '@metamask/onboarding';
 
 const { isMetaMaskInstalled } = MetaMaskOnboarding;
@@ -10,6 +10,7 @@ export default {
     accounts: [],
     contract: undefined,
     chainId: undefined,
+    usdPrice: undefined,
   },
 
   effects: {
@@ -74,6 +75,16 @@ export default {
         console.log(error)
       }
     },
+    *fetchETHtoUSDprice({ payload, callback }, { call, put }) {
+      const response = yield call(getETHtoUSDprice, payload);
+      if (callback && typeof callback === 'function') {
+        callback(response)
+      }
+      yield put({
+        type: 'saveETHPrice',
+        payload: response,
+      });
+    },
   },
 
   
@@ -98,6 +109,13 @@ export default {
           return {
             ...state,
             chainId: parseInt(action.payload, 16),
+          };
+      },
+      saveETHPrice(state, action) {
+        console.log(action.payload)
+          return {
+            ...state,
+            usdPrice: parseInt(action.payload["USD"], 10),
           };
       },
   },

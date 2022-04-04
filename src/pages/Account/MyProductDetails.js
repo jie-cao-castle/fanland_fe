@@ -258,10 +258,8 @@ class MyProductDetails extends Component {
           id: parseInt(id, 10),
         },
         callback: (response) => {
-          console.log("product/fetch", response)
           if (response.success) {
             const salesData = response.result.sales;
-            console.log("product/fetch salesData", salesData);
             if (salesData && salesData.length > 0) {
               for (let i = 0; i < salesData.length; i++) {
                 const sale = salesData[i];
@@ -422,7 +420,7 @@ class MyProductDetails extends Component {
               dispatch({
                 type: 'product/createSale',
                 payload: {
-                  productId: productData.product.Id,
+                  productId: productData.Id,
                   chainId :  chainId,
                   chainCode:"ETH",
                   contractId: productContracts[0].Id,
