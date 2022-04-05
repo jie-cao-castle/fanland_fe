@@ -660,7 +660,7 @@ class ProductDetails extends Component {
     if (sales && sales.length > 0) {
       for (let i = sales.length - 1; i >=0; i -= 1) {
         visitData.push({
-          x: moment(sales[i].EndTime).format('YYYY-MM-DD'),
+          x: moment(sales[i].EndTime).format('YYYY-MM-DD hh:mm:ss'),
           y: BigNumber(sales[i].Price).dividedBy(BigNumber(sales[i].PriceUnit)),
         });
       }
@@ -848,8 +848,6 @@ class ProductDetails extends Component {
                       {usdPrice && <NumberInfo
                         subTitle={<span>当前价格</span>}
                         total={`$`+ topSalePriceInfo.toFixed()+`(`+topSaleETHInfo.toFixed()+` ETH)`}
-                        status="up"
-                        subTotal={17.1}
                       />}
                       <MiniArea line height={45} data={visitData} />
                     </AccordionDetails>

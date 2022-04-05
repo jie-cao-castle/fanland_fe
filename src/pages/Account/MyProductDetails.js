@@ -502,10 +502,6 @@ class MyProductDetails extends Component {
 
   render() {
     const { productData, sales, contract, accounts, chainId, productContracts } = this.props;
-    console.log(chainId)
-
-    console.log(sales);
-
     const hasAccounts = accounts && accounts.length > 0;
     const hasContracts = productContracts && productContracts.length > 0;
     const salesEnabled = hasAccounts && hasContracts;
@@ -649,7 +645,7 @@ class MyProductDetails extends Component {
 
                 <Form layout='vertical'
                 >
-                  <Form.Item label="Price">
+                  <Form.Item label="藏品价格">
                     
                   <Input.Group compact>
                   {getFieldDecorator('chainCode', {
@@ -676,7 +672,7 @@ class MyProductDetails extends Component {
                     </Input.Group>
                   </Form.Item>
                   {getFieldDecorator('chainId', { initialValue: chainId })}
-                  <Form.Item label="Duration">
+                  <Form.Item label="售卖时间">
                       {getFieldDecorator('saleTimeRange', { initialValue: [
                         moment(), moment().add(7, 'days')
                       ] })
