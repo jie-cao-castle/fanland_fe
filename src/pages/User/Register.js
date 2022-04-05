@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'dva';
 import Link from 'umi/link';
 import router from 'umi/router';
-import { Form, Input, Button, Select, Row, Col, Popover, Progress } from 'antd';
+import { Form, Input, Button, Select, Row, Col, Popover, Progress, Card } from 'antd';
+import { GiAbstract065 } from 'react-icons/gi';
 import styles from './Register.less';
 
 const FormItem = Form.Item;
@@ -168,7 +169,16 @@ class Register extends Component {
     const { getFieldDecorator } = form;
     const { count, prefix, help, visible } = this.state;
     return (
-      <div className={styles.main}>
+      <Card className={styles.main}>
+          <div className={styles.top}>
+            <div className={styles.header}>
+              <Link to="/">
+                <GiAbstract065 size={32} style={{ marginRight:'10px'}}/>
+                <span className={styles.title}>Fanland</span>
+              </Link>
+            </div>
+            <div className={styles.desc}>Fanland是全亚洲最活跃的数字藏品NFT社区</div>
+          </div>
         <h3>注册</h3>
         <Form onSubmit={this.handleSubmit}>
           <FormItem>
@@ -223,55 +233,6 @@ class Register extends Component {
             })(<Input size="large" type="password" placeholder="确认密码" />)}
           </FormItem>
           <FormItem>
-            <InputGroup compact>
-              <Select
-                size="large"
-                value={prefix}
-                onChange={this.changePrefix}
-                style={{ width: '20%' }}
-              >
-                <Option value="86">+86</Option>
-                <Option value="87">+87</Option>
-              </Select>
-              {getFieldDecorator('mobile', {
-                rules: [
-                  {
-                    required: true,
-                    message: '请输入手机号！',
-                  },
-                  {
-                    pattern: /^1\d{10}$/,
-                    message: '手机号格式错误！',
-                  },
-                ],
-              })(<Input size="large" style={{ width: '80%' }} placeholder="11位手机号" />)}
-            </InputGroup>
-          </FormItem>
-          <FormItem>
-            <Row gutter={8}>
-              <Col span={16}>
-                {getFieldDecorator('captcha', {
-                  rules: [
-                    {
-                      required: true,
-                      message: '请输入验证码！',
-                    },
-                  ],
-                })(<Input size="large" placeholder="验证码" />)}
-              </Col>
-              <Col span={8}>
-                <Button
-                  size="large"
-                  disabled={count}
-                  className={styles.getCaptcha}
-                  onClick={this.onGetCaptcha}
-                >
-                  {count ? `${count} s` : '获取验证码'}
-                </Button>
-              </Col>
-            </Row>
-          </FormItem>
-          <FormItem>
             <Button
               size="large"
               loading={submitting}
@@ -286,7 +247,7 @@ class Register extends Component {
             </Link>
           </FormItem>
         </Form>
-      </div>
+      </Card>
     );
   }
 }

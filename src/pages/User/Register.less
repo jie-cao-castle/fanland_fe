@@ -3,7 +3,7 @@
 .main {
   width: 368px;
   margin: 0 auto;
-
+  background-color: hsla(0,0%,100%,.92);
   :global {
     .ant-form-item {
       margin-bottom: 24px;
@@ -54,4 +54,62 @@
       background-color: @warning-color;
     }
   }
+}
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: auto;
+  background: @layout-body-background;
+}
+
+.content {
+  padding: 32px 0;
+  flex: 1;
+}
+
+@media (min-width: @screen-md-min) {
+  .container {
+    background-image: url('/upload/bf4cde23-ab85-4f03-86b0-d5d789ed8410.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+
+  .content {
+    padding: 112px 0 24px 0;
+  }
+}
+
+.top {
+  text-align: center;
+}
+
+.header {
+  height: 44px;
+  line-height: 44px;
+  a {
+    text-decoration: none;
+  }
+}
+
+.logo {
+  height: 44px;
+  vertical-align: top;
+  margin-right: 16px;
+}
+
+.title {
+  font-size: 33px;
+  color: @heading-color;
+  font-family: 'Myriad Pro', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  font-weight: 600;
+  position: relative;
+  top: 2px;
+}
+
+.desc {
+  font-size: @font-size-base;
+  color: @text-color-secondary;
+  margin-top: 12px;
+  margin-bottom: 40px;
 }

@@ -359,8 +359,6 @@ class MyProductDetails extends Component {
     dispatch({
       type: 'product/clear',
     });
-    cancelAnimationFrame(this.reqRef);
-    clearTimeout(this.timeoutId);
   }
 
   getBlockChainLink(order) {

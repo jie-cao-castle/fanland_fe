@@ -23,13 +23,10 @@ const links = [
   },
 ];
 
-const copyright = (
-  <Fragment>
-    Copyright <Icon type="copyright" /> 2018 蚂蚁金服体验技术部出品
-  </Fragment>
-);
-
 class UserLayout extends React.PureComponent {
+  state = {
+    backgroundImageIndex: 2,
+  };
   // @TODO title
   // getPageTitle() {
   //   const { routerData, location } = this.props;
@@ -41,24 +38,58 @@ class UserLayout extends React.PureComponent {
   //   return title;
   // }
 
+  componentDidMount() {
+    this.refreshBackgroundImage();
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+
+  refreshBackgroundImage = () => {
+    this.interval = setInterval(() => {
+      let newbackgroundImageIndex = Math.floor(Math.random() * 5) + 1;
+      console.log("newbackgroundImageIndex", newbackgroundImageIndex);
+      this.setState({ backgroundImageIndex: newbackgroundImageIndex});
+    }, 10000);
+  };
+
   render() {
     const { children } = this.props;
+    const { backgroundImageIndex } = this.state;
     return (
       // @TODO <DocumentTitle title={this.getPageTitle()}>
-      <div className={styles.container}>
+      <div className={styles.container} style={{backgroundImage:`url("/upload/`+ backgroundImageIndex.toString() + `.jpg")`}}> 
         <div className={styles.content}>
-          <div className={styles.top}>
-            <div className={styles.header}>
-              <Link to="/">
-                <GiAbstract065 size={32} style={{ marginRight:'10px'}}/>
-                <span className={styles.title}>Fanland</span>
-              </Link>
-            </div>
-            <div className={styles.desc}>Fanland是全亚洲最活跃的数字藏品NFT社区</div>
-          </div>
           {children}
         </div>
-        <GlobalFooter links={links} copyright={copyright} />
+        <GlobalFooter
+          links={[
+            {
+              key: '首页',
+              title: '首页',
+              href: '/',
+              blankTarget: true,
+            },
+            {
+              key: 'github',
+              title: <Icon type="github" />,
+              href: '/',
+              blankTarget: true,
+            },
+            {
+              key: 'FanLand',
+              title: 'FanLand',
+              href: '/',
+              blankTarget: true,
+            },
+          ]}
+          copyright={
+            <Fragment>
+              Copyright <Icon type="copyright" /> 2022 繁澜宇宙出品
+            </Fragment>
+          }
+        />
       </div>
     );
   }

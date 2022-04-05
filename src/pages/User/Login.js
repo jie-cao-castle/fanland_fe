@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import Link from 'umi/link';
-import { Checkbox, Alert, Icon } from 'antd';
+import { Checkbox, Alert, Icon, Card } from 'antd';
 import Login from '@/components/Login';
 import styles from './Login.less';
-
+import { GiAbstract065 } from 'react-icons/gi';
 const { Tab, UserName, Password, Mobile, Captcha, Submit } = Login;
 
 export default
@@ -53,6 +53,8 @@ class LoginPage extends Component {
     }
   };
 
+
+
   changeAutoLogin = e => {
     this.setState({
       autoLogin: e.target.checked,
@@ -67,7 +69,16 @@ class LoginPage extends Component {
     const { login, submitting } = this.props;
     const { type, autoLogin } = this.state;
     return (
-      <div className={styles.main}>
+      <Card className={styles.main}>
+          <div className={styles.top}>
+            <div className={styles.header}>
+              <Link to="/">
+                <GiAbstract065 size={32} style={{ marginRight:'10px'}}/>
+                <span className={styles.title}>Fanland</span>
+              </Link>
+            </div>
+            <div className={styles.desc}>Fanland是全亚洲最活跃的数字藏品NFT社区</div>
+          </div>
         <Login
           defaultActiveKey={type}
           onTabChange={this.onTabChange}
@@ -88,14 +99,6 @@ class LoginPage extends Component {
               onPressEnter={() => this.loginForm.validateFields(this.handleSubmit)}
             />
           </Tab>
-          <Tab key="mobile" tab="手机号登录">
-            {login.status === 'error' &&
-              login.type === 'mobile' &&
-              !submitting &&
-              this.renderMessage('验证码错误')}
-            <Mobile name="mobile" />
-            <Captcha name="captcha" countDown={120} onGetCaptcha={this.onGetCaptcha} />
-          </Tab>
           <div>
             <Checkbox checked={autoLogin} onChange={this.changeAutoLogin}>
               自动登录
@@ -115,7 +118,7 @@ class LoginPage extends Component {
             </Link>
           </div>
         </Login>
-      </div>
+      </Card>
     );
   }
 }
