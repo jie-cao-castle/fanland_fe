@@ -161,20 +161,9 @@ class MyProductDetails extends Component {
           }
             return (
             <span>
-            {record.Status == 1 &&
-              <span>
-                <Button type='primary' onChange={e => this.handleBuySale(e, record)}>
-                  购买
-                </Button>
-              </span>
-              }
-              {(record.Status == 2 || record.Status == 0)&&
-              <span>
-                <Button>
+                <Button href={this.getBlockChainLink(record)} target='_blank'>
                   查看
                 </Button>
-              </span>
-              }
             </span>
             );
           }
@@ -264,12 +253,22 @@ class MyProductDetails extends Component {
               for (let i = 0; i < salesData.length; i++) {
                 const sale = salesData[i];
                 if (sale.Status == 0) {
+                  console.log("sale", sale);
                   dispatch({
-                    type: 'product/updateSale',
+                    type: 'product/getTrans',
                     payload: {
-                      id: sale.Id,
-                      status: 1
+                      transactionHash: sale.TransactionHash,
                     },
+                    callback: (response) => {
+                      console.log(response);
+                          dispatch({
+                            type: 'product/updateSale',
+                            payload: {
+                              id: sale.Id,
+                              status: response.status
+                            },
+                      });
+                    }
                   });
                 }
               }
@@ -364,6 +363,16 @@ class MyProductDetails extends Component {
     clearTimeout(this.timeoutId);
   }
 
+  getBlockChainLink(order) {
+    console.log("getBlockChainLink", order);
+    if (order.ChainId == 1) {
+      return 'http://etherscan.io/tx/' + order.TransactionHash;
+    } else if (order.ChainId == 3) {
+      return 'http://ropsten.etherscan.io/tx/' + order.TransactionHash;
+    }
+    return "#";
+  }
+
   handleCreateContract = e => {
     const { dispatch, form, chainId } = this.props;
     const params = getPageQuery();
@@ -430,7 +439,8 @@ class MyProductDetails extends Component {
                   endTime:values.saleTimeRange[1].format(),
                   effectiveTime:values.saleTimeRange[0].format(),
                   status: 0,
-                  fromUserId: currentUser.Id
+                  fromUserId: currentUser.Id,
+                  transactionHash:response.hash
                 },
                 callback: (response) => {
                   if (response && response.success) {

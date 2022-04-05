@@ -151,6 +151,10 @@ export default {
         }
       } catch (error) {
         console.log(error);
+        let response = { success: false, status: 2 }
+        if (callback && typeof callback === 'function') {
+          callback(response)
+        }
       }
     },
     *fetchTopProduct(_, { call, put }) {
@@ -262,7 +266,6 @@ export default {
       const newData = sales.map(item => ({ ...item }));
       if (action.payload && action.payload.success) {
         const newSale = action.payload.result;
-        console.log("newSale", newSale);
         for (let i = 0 ; i < newData.length; i++){
           if (newData[i].Id == newSale.Id) {
             newData[i].Status = newSale.Status;

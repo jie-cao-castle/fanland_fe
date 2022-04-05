@@ -300,6 +300,13 @@ class ProductDetails extends Component {
               saleId:topSale.Id
             }
           });
+          dispatch({
+            type: 'product/updateSale',
+            payload: {
+              id: topSale.Id,
+              status: 4
+            },
+          });
         }
       }
     });
@@ -436,6 +443,13 @@ class ProductDetails extends Component {
               saleId:record.Id
             }
           });
+          dispatch({
+            type: 'product/updateSale',
+            payload: {
+              id: record.Id,
+              status: 4
+            },
+          });
         }
       }
     });
@@ -461,6 +475,17 @@ class ProductDetails extends Component {
   fixedZero(val) {
     return val * 1 < 10 ? `0${val}` : val;
   }
+
+  getBlockChainLink(order) {
+    console.log("getBlockChainLink", order);
+    if (order.ChainId == 1) {
+      return 'http://etherscan.io/tx/' + order.TransactionHash;
+    } else if (order.ChainId == 3) {
+      return 'http://ropsten.etherscan.io/tx/' + order.TransactionHash;
+    }
+    return "#";
+  }
+  
   salsColumns = [
     {
       title: '价格',
@@ -512,13 +537,16 @@ class ProductDetails extends Component {
         let txt = "提交中";
         if (record.Status == 1) {
           color = 'green';
-          txt = "售卖中"
+          txt = "售卖中";
         } else if (record.Status == 2) {
-          color = 'volcano'
-          txt = "已完成"
+          color = 'volcano';
+          txt = "已完成";
         } else if (record.Status == 3) {
-          color = 'volcano'
-          txt = "已截止"
+          color = 'volcano';
+          txt = "已截止";
+        } else if (record.Status == 4) {
+          color = 'geekblue';
+          txt = "交易确认中";
         }
           return (
             <Tag color={color} key={record.Id}>
@@ -542,16 +570,16 @@ class ProductDetails extends Component {
           }
             return (
             <span>
-            {record.Status == 1 &&
+            {record.Status === 1 &&
               <span>
                 <Button type='primary' onClick={e => this.handleBuySale(e, record)}>
                   购买
                 </Button>
               </span>
               }
-              {(record.Status == 2 || record.Status == 0)&&
+              {(record.Status !== 1)&&
               <span>
-                <Button>
+                <Button href={this.getBlockChainLink(record)} target='_blank'>
                   查看
                 </Button>
               </span>
@@ -619,6 +647,10 @@ class ProductDetails extends Component {
         if (record.Status == 1) {
           color = 'green';
           txt = "已完成"
+        }
+        if (record.Status == 2) {
+          color = 'volcano';
+          txt = "交易失败"
         }
         return (
           <Tag color={color} key={record.Id}>
