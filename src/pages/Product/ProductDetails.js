@@ -149,6 +149,9 @@ class ProductDetails extends Component {
         },
       });
       dispatch({
+        type: 'eth/fetchETHtoUSDprice',
+      });
+      dispatch({
         type: 'product/fetchProductContracts',
         payload: {
           productId: parseInt(id, 10),
@@ -184,12 +187,9 @@ class ProductDetails extends Component {
           productId: parseInt(id, 10),
         },
         callback: (response) => {
-          console.log("getNftOrders", response)
-  
           if (response.success && response.result && response.result.length > 0) {
             let orders = response.result;
             for (let i = 0; i < orders.length; i++) {
-              console.log("getNftOrder", orders[i])
               if (orders[i].Status == 0) {
                 dispatch({
                   type: 'product/getTrans',
@@ -667,10 +667,13 @@ class ProductDetails extends Component {
    }
 
    let topSalePriceInfo = undefined;
+   let topSaleETHInfo = undefined;
    let topSale = undefined;
    let targetTime = undefined;
+   console.log("usdPrice", usdPrice);
    if (sales && sales.length > 0) {
-      topSalePriceInfo  = BigNumber(sales[0].Price).dividedBy(BigNumber(sales[0].PriceUnit)) * usdPrice;
+      topSalePriceInfo  = BigNumber(sales[0].Price).dividedBy(BigNumber(sales[0].PriceUnit)).multipliedBy(usdPrice);
+      topSaleETHInfo  = BigNumber(sales[0].Price).dividedBy(BigNumber(sales[0].PriceUnit));
       targetTime = moment(sales[0].EndTime).valueOf();
       topSale = sales[0];
       console.log(sales[0]);
@@ -843,8 +846,8 @@ class ProductDetails extends Component {
                       <CountDown style={{ fontSize: 30 }} target={targetTime} format={this.formatCountDown}/>
                       <Button style={ {marginLeft: '35px', marginTop: '-10px' }} type="primary" icon="tag" size='large' onClick={() => this.handleBuy(topSale)}>下单</Button>
                       {usdPrice && <NumberInfo
-                        subTitle={<span>历史价格</span>}
-                        total={numeral(sales[0].Price*12321).format('0,0')}
+                        subTitle={<span>当前价格</span>}
+                        total={`$`+ topSalePriceInfo.toFixed()+`(`+topSaleETHInfo.toFixed()+` ETH)`}
                         status="up"
                         subTotal={17.1}
                       />}

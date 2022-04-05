@@ -109,11 +109,7 @@ export async function getTransaction(params) {
     return transaction.wait();
 }
 
-export async function getETHtoUSDprice(params) {
-    return request('https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD', {
-        method: 'GET',
-        body: {
-          ...params,
-        },
-      });
-}
+export async function getETHtoUSDprice() {
+    console.log("getETHtoUSDprice");
+    return request('https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD');
+  }
